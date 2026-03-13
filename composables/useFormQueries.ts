@@ -1,11 +1,23 @@
-import { ref, isRef, type Ref } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import type { Ref } from 'vue'
 import type { FormConfig } from '~/types/form'
 
-export function useFormsListQuery() {
-  return useQuery<FormConfig[]>({
-    queryKey: ['forms'],
-    queryFn: () => $fetch('/api/forms'),
+interface PaginatedForms {
+  items: FormConfig[]
+  total: number
+  page: number
+  limit: number
+}
+
+export function useFormsListQuery(page?: Ref<number>, limit?: Ref<number>) {
+  const resolvedPage = page || ref(1)
+  const resolvedLimit = limit || ref(50)
+
+  return useQuery<PaginatedForms>({
+    queryKey: ['forms', resolvedPage, resolvedLimit],
+    queryFn: () => $fetch('/api/forms', {
+      params: { page: resolvedPage.value, limit: resolvedLimit.value },
+    }),
   })
 }
 

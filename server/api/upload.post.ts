@@ -1,18 +1,10 @@
-import { v2 as cloudinary } from 'cloudinary'
+import { getCloudinary } from '~/server/utils/cloudinary'
 
 const ALLOWED_TYPES = ['image/png', 'image/svg+xml', 'image/webp']
 const MAX_SIZE = 5 * 1024 * 1024
 
 export default defineEventHandler(async (event) => {
   await requireAuth(event)
-
-  const config = useRuntimeConfig()
-
-  cloudinary.config({
-    cloud_name: config.cloudinaryCloudName,
-    api_key: config.cloudinaryApiKey,
-    api_secret: config.cloudinaryApiSecret,
-  })
 
   const formData = await readMultipartFormData(event)
   if (!formData || formData.length === 0) {
@@ -36,15 +28,25 @@ export default defineEventHandler(async (event) => {
   }
 
   const base64 = `data:${file.type};base64,${file.data.toString('base64')}`
-
+  const config = useRuntimeConfig()
   const folder = config.cloudinaryFolder || 'Form-Generator-Logos'
-  const result = await cloudinary.uploader.upload(base64, {
-    folder,
-    resource_type: 'image',
-  })
 
-  return {
-    url: result.secure_url,
-    publicId: result.public_id,
+  try {
+    const cloudinary = getCloudinary()
+    const result = await cloudinary.uploader.upload(base64, {
+      folder,
+      resource_type: 'image',
+    })
+
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+    }
+  }
+  catch (err) {
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'Image upload failed. Please try again later.',
+    })
   }
 })

@@ -1,3 +1,5 @@
+import { consola } from 'consola'
+
 export default defineOAuthGoogleEventHandler({
   config: {
     scope: ['email', 'profile'],
@@ -23,7 +25,7 @@ export default defineOAuthGoogleEventHandler({
     return sendRedirect(event, '/admin')
   },
   onError(event, error) {
-    console.error('[Google OAuth] Error:', error)
+    consola.error('[Google OAuth] Error:', error)
     return sendRedirect(event, '/login?error=auth_failed')
   },
 })

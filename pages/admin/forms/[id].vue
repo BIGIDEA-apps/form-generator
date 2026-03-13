@@ -107,7 +107,6 @@ const { formUrl: getFormUrl } = useFormBaseUrl()
 const { data: formData, isLoading, error } = useFormQuery(formId)
 const updateMutation = useUpdateFormMutation()
 const toast = useToast()
-const { notify } = useNotify()
 
 const formUrl = computed(() => {
   const slug = store.form?.slug
@@ -132,7 +131,7 @@ async function handleSave() {
     await updateMutation.mutateAsync({ id: formId.value, data })
     store.isDirty = false
     store.clearAllValidationErrors()
-    notify('הטופס נשמר בהצלחה')
+    toast.add({ title: 'הטופס נשמר בהצלחה', color: 'green' })
   }
   catch (err: any) {
     toast.add({
@@ -146,7 +145,7 @@ function handleCopyLink() {
   if (!store.form?.slug) return
   const url = getFormUrl(store.form.slug)
   navigator.clipboard.writeText(url)
-  notify('הקישור הועתק')
+  toast.add({ title: 'הקישור הועתק', color: 'green' })
 }
 </script>
 

@@ -58,7 +58,7 @@ const FormSchema = new Schema<IForm>(
   {
     slug: { type: String, required: true, unique: true, index: true },
     formName: { type: String, required: true },
-    formTitle: { type: String, required: true },
+    formTitle: { type: String, default: '' },
     company: { type: String, default: '' },
     primaryLogo: { type: String, default: '/img/logos/bigidea-logo.png' },
     primaryLogoSvgToWhite: { type: Boolean, default: false },

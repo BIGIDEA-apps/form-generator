@@ -1,4 +1,5 @@
 @import './fonts.css';
+@import './form-fields.css';
 
 :root {
   --color-brand-bg: #00205B;
@@ -18,4 +19,8 @@ body {
   --ui-border: rgba(255, 255, 255, 0.1);
   --ui-text: #ffffff;
   --ui-text-muted: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

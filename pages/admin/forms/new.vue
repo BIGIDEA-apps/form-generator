@@ -1,37 +1,47 @@
 <template>
   <div class="AdminFormNewPage">
     <div class="AdminFormNewPage__layout">
-      <div class="AdminFormNewPage__main">
-        <div class="AdminFormNewPage__main-inner">
-          <div class="AdminFormNewPage__header">
-            <UButton
-              icon="i-heroicons-arrow-right"
-              variant="ghost"
-              color="gray"
-              @click="navigateTo('/admin')"
-            />
-            <h1 class="AdminFormNewPage__title">טופס חדש</h1>
-          </div>
+      <div class="AdminFormNewPage__columns">
+        <div class="AdminFormNewPage__main">
+          <div class="AdminFormNewPage__main-inner">
+            <div class="AdminFormNewPage__header">
+              <UButton
+                icon="i-heroicons-arrow-right"
+                variant="ghost"
+                color="gray"
+                @click="navigateTo('/admin')"
+              />
+              <h1 class="AdminFormNewPage__title">טופס חדש</h1>
+            </div>
 
-          <div class="AdminFormNewPage__content">
-            <AdminFormEditor />
+            <div class="AdminFormNewPage__content">
+              <AdminFormEditor />
+            </div>
           </div>
         </div>
-      </div>
 
-      <AdminFieldSettingsSidebar />
+        <AdminFieldSettingsSidebar />
+      </div>
     </div>
 
     <footer class="AdminFormNewPage__footer">
       <div class="AdminFormNewPage__footer-inner">
-        <UButton
-          icon="i-heroicons-document-arrow-down"
-          label="שמור טופס"
-          color="primary"
-          class="AdminFormNewPage__save-btn"
-          :loading="createMutation.isPending.value"
-          @click="handleSave"
-        />
+        <UTooltip
+          :text="store.hasValidationErrors ? 'חלק מהשדות לא עברו את האימות' : ''"
+          :disabled="!store.hasValidationErrors"
+        >
+          <span class="AdminFormNewPage__save-wrapper">
+            <UButton
+              icon="i-heroicons-document-arrow-down"
+              label="שמור טופס"
+              color="primary"
+              class="AdminFormNewPage__save-btn"
+              :loading="createMutation.isPending.value"
+              :disabled="store.hasValidationErrors"
+              @click="handleSave"
+            />
+          </span>
+        </UTooltip>
       </div>
     </footer>
   </div>
@@ -48,7 +58,6 @@ definePageMeta({
 const store = useFormEditorStore()
 const createMutation = useCreateFormMutation()
 const toast = useToast()
-const { notify } = useNotify()
 
 onMounted(() => {
   store.initNew()
@@ -59,15 +68,13 @@ onUnmounted(() => {
 })
 
 async function handleSave() {
-  if (!store.form?.formName) {
-    toast.add({ title: 'נא למלא שם פנימי לטופס', color: 'yellow' })
-    return
-  }
+  if (!store.validateAll()) return
 
   try {
     const data = store.getExportData()
     const result = await createMutation.mutateAsync(data)
-    notify('הטופס נשמר בהצלחה')
+    store.clearAllValidationErrors()
+    toast.add({ title: 'הטופס נוצר בהצלחה', color: 'green' })
     navigateTo(`/admin/forms/${result._id}`)
   }
   catch (err: any) {
@@ -85,18 +92,29 @@ async function handleSave() {
 }
 
 .AdminFormNewPage__layout {
-  margin-left: 22rem;
-}
-
-.AdminFormNewPage__main {
   display: flex;
   justify-content: center;
   padding: 1.5rem;
 }
 
-.AdminFormNewPage__main-inner {
-  max-width: 48rem;
+.AdminFormNewPage__columns {
+  display: flex;
+  gap: 1.5rem;
   width: 100%;
+  max-width: 74.5rem;
+}
+
+.AdminFormNewPage__main {
+  flex: 1;
+  min-width: 0;
+  max-width: 48rem;
+}
+
+.AdminFormNewPage__main-inner {
+  width: 100%;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1rem;
 }
 
 .AdminFormNewPage__header {
@@ -126,6 +144,10 @@ async function handleSave() {
 .AdminFormNewPage__footer-inner {
   display: flex;
   justify-content: center;
+}
+
+.AdminFormNewPage__save-wrapper {
+  display: inline-block;
 }
 
 .AdminFormNewPage__save-btn {

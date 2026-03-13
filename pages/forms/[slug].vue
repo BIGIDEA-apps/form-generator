@@ -108,7 +108,8 @@ async function handleSubmit() {
     store.submitted = true
   }
   catch (err) {
-    console.error('Submission error:', err)
+    // Debug log: Submission error
+    if (import.meta.dev) console.error('Submission error:', err)
     alert('אירעה שגיאה בשליחת הטופס. אנא נסו שנית.')
   }
   finally {
@@ -201,182 +202,27 @@ onUnmounted(() => {
   font-size: 1rem;
 }
 
-/* ─── Form field shared styles ─── */
+/* Public form size overrides (shared base in form-fields.css) */
 
-.FormField {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  text-align: right;
-}
-
-.FormField__label {
-  color: var(--color-brand-white);
+.PublicFormPage .FormField__label {
   font-size: 26px;
-  font-weight: 700;
 }
 
-.FormField__required {
-  color: var(--color-brand-primary);
-}
-
-.FormField__info {
-  color: rgba(255, 255, 255, 0.6);
+.PublicFormPage .FormField__info {
   font-size: 16px;
-  margin: 0;
 }
 
-.FormField__input,
-.FormField__textarea,
-.FormField__select {
-  width: 100%;
-  background: var(--color-brand-input-bg);
-  color: var(--color-brand-white);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  font-size: 22px;
-  font-family: inherit;
-  transition: border-color 0.2s;
-  outline: none;
-}
-
-.FormField__input:focus,
-.FormField__textarea:focus,
-.FormField__select:focus {
-  border-color: var(--color-brand-primary);
-}
-
-.FormField__input--error,
-.FormField__textarea--error,
-.FormField__select--error {
-  border-color: #ef4444;
-}
-
-.FormField__input::placeholder,
-.FormField__textarea::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.FormField__textarea {
-  resize: vertical;
-  min-height: 6rem;
-}
-
-.FormField__select-wrapper {
-  position: relative;
-}
-
-.FormField__select {
-  appearance: none;
-  cursor: pointer;
-  padding-left: 2.5rem;
-}
-
-.FormField__select option {
-  background: var(--color-brand-input-bg);
-  color: white;
-}
-
-.FormField__select-chevron {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  color: rgba(255, 255, 255, 0.5);
-  pointer-events: none;
-}
-
-.FormField__error {
-  color: #fca5a5;
-  font-size: 16px;
-  margin: 0;
-}
-
-/* ─── Radio field styles ─── */
-
-.FormField__radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.FormField__radio-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  color: var(--color-brand-white);
+.PublicFormPage .FormField__input,
+.PublicFormPage .FormField__textarea,
+.PublicFormPage .FormField__select {
   font-size: 22px;
 }
 
-.FormField__radio-input {
-  display: none;
+.PublicFormPage .FormField__error {
+  font-size: 16px;
 }
 
-.FormField__radio-custom {
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  position: relative;
-  flex-shrink: 0;
-  transition: border-color 0.2s;
-}
-
-.FormField__radio-input:checked + .FormField__radio-custom {
-  border-color: var(--color-brand-primary);
-}
-
-.FormField__radio-input:checked + .FormField__radio-custom::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 0.5rem;
-  height: 0.5rem;
-  background: var(--color-brand-primary);
-  border-radius: 50%;
-}
-
-/* ─── Toggle field styles ─── */
-
-.FormField__toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.FormField__toggle-track {
-  display: block;
-  width: 3rem;
-  height: 1.5rem;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
-  position: relative;
-  transition: background 0.2s;
-}
-
-.FormField__toggle--active .FormField__toggle-track {
-  background: var(--color-brand-primary);
-}
-
-.FormField__toggle-thumb {
-  position: absolute;
-  top: 0.15rem;
-  right: 0.15rem;
-  width: 1.2rem;
-  height: 1.2rem;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.2s;
-}
-
-.FormField__toggle--active .FormField__toggle-thumb {
-  transform: translateX(-1.5rem);
+.PublicFormPage .FormField__radio-option {
+  font-size: 22px;
 }
 </style>

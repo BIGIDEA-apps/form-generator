@@ -12,8 +12,6 @@ export const useFormEditorStore = defineStore('formEditor', {
     validationErrors: {} as Record<string, string>,
   }),
 
-  computed: {},
-
   getters: {
     hasValidationErrors(): boolean {
       return Object.keys(this.validationErrors).length > 0

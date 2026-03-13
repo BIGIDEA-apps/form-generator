@@ -39,6 +39,29 @@
         @click="navigateTo('/admin/forms/new')"
       />
     </div>
+
+    <UModal v-model="showDeleteModal">
+      <div class="AdminFormsPage__delete-modal">
+        <h3 class="AdminFormsPage__delete-modal-title">מחיקת טופס</h3>
+        <p class="AdminFormsPage__delete-modal-text">
+          האם למחוק את "{{ formToDelete?.formName }}"?
+        </p>
+        <div class="AdminFormsPage__delete-modal-actions">
+          <UButton
+            label="ביטול"
+            variant="outline"
+            color="gray"
+            @click="showDeleteModal = false"
+          />
+          <UButton
+            label="מחיקה"
+            color="red"
+            :loading="deleteMutation.isPending.value"
+            @click="confirmDelete"
+          />
+        </div>
+      </div>
+    </UModal>
   </div>
 </template>
 
@@ -50,12 +73,15 @@ definePageMeta({
   colorMode: 'dark',
 })
 
-const { data: forms, isLoading, error, refetch } = useFormsListQuery()
+const { data: formsData, isLoading, error, refetch } = useFormsListQuery()
+const forms = computed(() => formsData.value?.items)
 const deleteMutation = useDeleteFormMutation()
 const duplicateMutation = useDuplicateFormMutation()
 const { formUrl } = useFormBaseUrl()
 
 const toast = useToast()
+const showDeleteModal = ref(false)
+const formToDelete = ref<FormConfig | null>(null)
 
 function handleEdit(form: FormConfig) {
   navigateTo(`/admin/forms/${form._id}`)
@@ -71,15 +97,24 @@ async function handleDuplicate(form: FormConfig) {
   }
 }
 
-async function handleDelete(form: FormConfig) {
-  if (!confirm(`למחוק את "${form.formName}"?`)) return
+function handleDelete(form: FormConfig) {
+  formToDelete.value = form
+  showDeleteModal.value = true
+}
+
+async function confirmDelete() {
+  if (!formToDelete.value) return
 
   try {
-    await deleteMutation.mutateAsync(form._id!)
+    await deleteMutation.mutateAsync(formToDelete.value._id!)
     toast.add({ title: 'הטופס נמחק', color: 'green' })
   }
   catch {
     toast.add({ title: 'שגיאה במחיקת הטופס', color: 'red' })
+  }
+  finally {
+    showDeleteModal.value = false
+    formToDelete.value = null
   }
 }
 
@@ -136,5 +171,28 @@ function handleCopyLink(form: FormConfig) {
 
 .AdminFormsPage__empty-icon {
   font-size: 3rem;
+}
+
+.AdminFormsPage__delete-modal {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.AdminFormsPage__delete-modal-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.AdminFormsPage__delete-modal-text {
+  color: var(--ui-text-muted);
+  font-size: 0.9375rem;
+}
+
+.AdminFormsPage__delete-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
 }
 </style>

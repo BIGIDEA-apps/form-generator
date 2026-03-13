@@ -3,6 +3,5 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <Notify />
   </div>
 </template>

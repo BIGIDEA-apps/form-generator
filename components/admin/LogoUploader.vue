@@ -264,11 +264,7 @@ const isSvg = computed(() => !!props.modelValue?.toLowerCase().includes('.svg'))
   border: 2px solid var(--ui-border);
   border-top-color: #00CDFF;
   border-radius: 50%;
-  animation: LogoUploader-spin 0.6s linear infinite;
-}
-
-@keyframes LogoUploader-spin {
-  to { transform: rotate(360deg); }
+  animation: spin 0.6s linear infinite;
 }
 
 .LogoUploader__dropzone-icon {
