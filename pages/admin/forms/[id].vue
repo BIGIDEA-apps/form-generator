@@ -50,15 +50,22 @@
       <footer class="AdminFormEditPage__footer">
         <div class="AdminFormEditPage__footer-inner">
           <div class="AdminFormEditPage__footer-actions">
-            <UButton
-              icon="i-heroicons-document-arrow-down"
-              label="שמור טופס"
-              color="primary"
-              class="AdminFormEditPage__save-btn"
-              :loading="updateMutation.isPending.value"
-              :disabled="!store.isDirty"
-              @click="handleSave"
-            />
+            <UTooltip
+              :text="store.hasValidationErrors ? 'חלק מהשדות לא עברו את האימות' : ''"
+              :disabled="!store.hasValidationErrors"
+            >
+              <span class="AdminFormEditPage__save-wrapper">
+                <UButton
+                  icon="i-heroicons-document-arrow-down"
+                  label="שמור טופס"
+                  color="primary"
+                  class="AdminFormEditPage__save-btn"
+                  :loading="updateMutation.isPending.value"
+                  :disabled="!store.isDirty || store.hasValidationErrors"
+                  @click="handleSave"
+                />
+              </span>
+            </UTooltip>
             <UButton
               icon="i-heroicons-arrow-top-right-on-square"
               label="לצפייה בטופס"
@@ -118,15 +125,13 @@ onUnmounted(() => {
 })
 
 async function handleSave() {
-  if (!store.form?.formName) {
-    toast.add({ title: 'נא למלא שם פנימי לטופס', color: 'yellow' })
-    return
-  }
+  if (!store.validateAll()) return
 
   try {
     const data = store.getExportData()
     await updateMutation.mutateAsync({ id: formId.value, data })
     store.isDirty = false
+    store.clearAllValidationErrors()
     notify('הטופס נשמר בהצלחה')
   }
   catch (err: any) {
@@ -241,6 +246,10 @@ function handleCopyLink() {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.AdminFormEditPage__save-wrapper {
+  display: inline-block;
 }
 
 .AdminFormEditPage__save-btn {

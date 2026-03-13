@@ -10,7 +10,9 @@
               dir="rtl"
               size="lg"
               @update:model-value="store.updateFormField('formName', $event)"
+              @blur="store.validateField('formName')"
             />
+            <p v-if="store.validationErrors.formName" class="FormEditor__field-error">{{ store.validationErrors.formName }}</p>
           </UFormGroup>
           <UFormGroup label="חברה">
             <UInput
@@ -30,8 +32,10 @@
                 placeholder="auto-generated-if-empty"
                 class="FormEditor__slug-input"
                 @update:model-value="store.updateFormField('slug', $event)"
+                @blur="store.validateField('slug')"
               />
             </div>
+            <p v-if="store.validationErrors.slug" class="FormEditor__field-error">{{ store.validationErrors.slug }}</p>
           </UFormGroup>
         </div>
       </div>
@@ -47,7 +51,9 @@
               dir="rtl"
               size="lg"
               @update:model-value="store.updateFormField('formTitle', $event)"
+              @blur="store.validateField('formTitle')"
             />
+            <p v-if="store.validationErrors.formTitle" class="FormEditor__field-error">{{ store.validationErrors.formTitle }}</p>
           </UFormGroup>
         </div>
         <div class="FormEditor__logos">
@@ -205,5 +211,11 @@ function getPageFields(pageKey: string): FieldConfig[] {
 
 .FormEditor__slug-row .FormEditor__slug-input input {
   padding-inline-start: 0.5rem;
+}
+
+.FormEditor__field-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
 }
 </style>

@@ -165,9 +165,8 @@ function removeOption(index: number) {
 }
 
 .FieldSettingsSidebar__title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--ui-text-muted);
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .FieldSettingsSidebar__body {

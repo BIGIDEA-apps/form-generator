@@ -9,11 +9,16 @@ export const useFormEditorStore = defineStore('formEditor', {
     isDirty: false,
     isNew: true,
     activeSettingsFieldKey: null as string | null,
+    validationErrors: {} as Record<string, string>,
   }),
 
   computed: {},
 
   getters: {
+    hasValidationErrors(): boolean {
+      return Object.keys(this.validationErrors).length > 0
+    },
+
     activePage(): FormPage | undefined {
       return this.form?.pages.find(p => p.key === this.activePageKey)
     },
@@ -109,6 +114,52 @@ export const useFormEditorStore = defineStore('formEditor', {
       this.activeSettingsFieldKey = null
     },
 
+    validateField(fieldKey: string): string | null {
+      if (!this.form) return null
+
+      const value = String((this.form as any)[fieldKey] ?? '').trim()
+      let error: string | null = null
+
+      if (fieldKey === 'formName') {
+        if (!value) error = 'נא למלא שם פנימי לטופס'
+      } else if (fieldKey === 'formTitle') {
+        if (!value) error = 'נא למלא שם הטופס לתצוגה'
+      } else if (fieldKey === 'slug') {
+        if (value && !/^[a-zA-Z0-9_-]+$/.test(value)) {
+          error = 'כתובת ה-URL יכולה להכיל רק אותיות באנגלית, מספרים, מקף וקו תחתון'
+        }
+      }
+
+      if (error) {
+        this.validationErrors = { ...this.validationErrors, [fieldKey]: error }
+        return error
+      }
+
+      if (this.validationErrors[fieldKey]) {
+        const { [fieldKey]: _, ...rest } = this.validationErrors
+        this.validationErrors = rest
+      }
+      return null
+    },
+
+    clearFieldError(fieldKey: string) {
+      if (this.validationErrors[fieldKey]) {
+        const { [fieldKey]: _, ...rest } = this.validationErrors
+        this.validationErrors = rest
+      }
+    },
+
+    clearAllValidationErrors() {
+      this.validationErrors = {}
+    },
+
+    validateAll(): boolean {
+      this.validateField('formName')
+      this.validateField('formTitle')
+      this.validateField('slug')
+      return !this.hasValidationErrors
+    },
+
     getExportData(): Partial<FormConfig> {
       if (!this.form) return {}
       const { _id, createdAt, updatedAt, ...data } = this.form as any
@@ -121,6 +172,7 @@ export const useFormEditorStore = defineStore('formEditor', {
       this.isDirty = false
       this.isNew = true
       this.activeSettingsFieldKey = null
+      this.validationErrors = {}
     },
   },
 })

@@ -26,8 +26,11 @@ export default defineEventHandler(async (event) => {
   delete body._id
   delete body.createdAt
 
-  if (!body.slug || String(body.slug).trim() === '') {
+  const rawSlug = body.slug ? String(body.slug).replace(/[^a-zA-Z0-9_-]/g, '') : ''
+  if (!rawSlug) {
     body.slug = await generateUniqueBigIdeaSlug()
+  } else {
+    body.slug = rawSlug
   }
 
   const form = await FormModel.findByIdAndUpdate(
