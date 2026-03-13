@@ -16,8 +16,9 @@
 
     <template v-else>
       <div class="AdminFormEditPage__layout">
-        <div class="AdminFormEditPage__main">
-          <div class="AdminFormEditPage__main-inner">
+        <div class="AdminFormEditPage__columns">
+          <div class="AdminFormEditPage__main">
+            <div class="AdminFormEditPage__main-inner">
             <div class="AdminFormEditPage__header">
               <UButton
                 icon="i-heroicons-arrow-right"
@@ -42,8 +43,8 @@
             </div>
           </div>
         </div>
-
-        <AdminFieldSettingsSidebar />
+          <AdminFieldSettingsSidebar />
+        </div>
       </div>
 
       <footer class="AdminFormEditPage__footer">
@@ -169,19 +170,26 @@ function handleCopyLink() {
   gap: 1rem;
 }
 
-/* Sidebar: left 1.5rem + width 22rem + gap 1.5rem (match main padding) */
 .AdminFormEditPage__layout {
-  margin-left: calc(1.5rem + 22rem + 1.5rem);
-}
-
-.AdminFormEditPage__main {
   display: flex;
   justify-content: center;
   padding: 1.5rem;
 }
 
-.AdminFormEditPage__main-inner {
+.AdminFormEditPage__columns {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 74.5rem;
+}
+
+.AdminFormEditPage__main {
+  flex: 1;
+  min-width: 0;
   max-width: 48rem;
+}
+
+.AdminFormEditPage__main-inner {
   width: 100%;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.03);

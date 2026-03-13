@@ -17,7 +17,14 @@
             />
           </UFormGroup>
 
-          <UFormGroup v-if="field.inputType === 'display'" label="תוכן">
+          <UFormGroup v-if="field.inputType === 'display' && field.key === 'mainDescription'" label="תוכן">
+            <AdminRichTextEditor
+              :model-value="field.defaultValue || ''"
+              @update:model-value="store.updateFieldConfig(field.key, { defaultValue: $event })"
+            />
+          </UFormGroup>
+
+          <UFormGroup v-else-if="field.inputType === 'display'" label="תוכן">
             <UInput
               :model-value="field.defaultValue"
               dir="rtl"
@@ -119,15 +126,15 @@ function removeOption(index: number) {
 
 <style>
 .FieldSettingsSidebar {
-  width: 22rem;
+  width: 24rem;
   flex-shrink: 0;
+  position: sticky;
+  top: 5.5rem;
+  height: calc(100vh - 5.5rem - 5.5rem);
+  min-height: calc(100vh - 5.5rem - 5.5rem);
   padding: 1rem;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 1rem;
-  position: fixed;
-  top: calc(3.5rem + 1.5rem);
-  bottom: calc(5rem + 1.5rem);
-  left: 1.5rem;
   overflow: hidden;
   z-index: 5;
   display: flex;
@@ -135,7 +142,7 @@ function removeOption(index: number) {
 }
 
 .FieldSettingsSidebar__panel-title {
-  padding: 1rem 1.25rem;
+  padding-bottom: 1rem;
   font-size: 1.125rem;
   font-weight: 700;
   border-bottom: 1px solid var(--ui-border);
@@ -153,18 +160,18 @@ function removeOption(index: number) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--ui-border);
+  padding: 0.5rem 0;
   flex-shrink: 0;
 }
 
 .FieldSettingsSidebar__title {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ui-text-muted);
 }
 
 .FieldSettingsSidebar__body {
-  padding: 1.25rem;
+  padding-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;

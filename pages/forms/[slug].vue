@@ -42,7 +42,6 @@
       <FormPage
         :page-title="currentPageTitle"
         :show-title="store.currentPage?.showTitle !== false"
-        :description="store.currentPageIndex === 0 ? formConfig.mainDescription : undefined"
         :fields="store.currentPageFields"
       />
 

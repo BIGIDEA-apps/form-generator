@@ -110,4 +110,21 @@ const userMenuItems = computed(() => [
 .AdminLayout__content {
   min-height: 0;
 }
+
+/* Back office input styling – match RichTextEditor (background, border, no focus ring) */
+.AdminLayout input:not([type="file"]),
+.AdminLayout textarea {
+  background: var(--ui-bg) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 0.5rem;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.AdminLayout input:not([type="file"]):focus,
+.AdminLayout textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--ui-border);
+}
 </style>

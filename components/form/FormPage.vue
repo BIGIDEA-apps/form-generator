@@ -2,11 +2,14 @@
   <section class="FormPage">
     <h2 v-if="showTitle && pageTitle" class="FormPage__title">{{ pageTitle }}</h2>
 
-    <p v-if="description" class="FormPage__description" v-html="formattedDescription" />
-
     <div class="FormPage__fields">
       <template v-for="field in fields" :key="field.key">
-        <div v-if="field.inputType === 'display'" class="FormPage__display-text">
+        <div
+          v-if="field.inputType === 'display' && field.key === 'mainDescription'"
+          class="FormPage__display-text FormPage__rich-text"
+          v-html="store.formConfig?.fields[field.key]?.defaultValue || field.defaultValue"
+        />
+        <div v-else-if="field.inputType === 'display'" class="FormPage__display-text">
           {{ store.formConfig?.fields[field.key]?.defaultValue || field.defaultValue }}
         </div>
 
@@ -66,16 +69,11 @@ import ToggleField from '~/components/form/fields/ToggleField.vue'
 defineProps<{
   pageTitle: string
   showTitle?: boolean
-  description?: string
   fields: FieldConfig[]
 }>()
 
 const store = useFormSubmissionStore()
 
-const formattedDescription = computed(() => {
-  const desc = store.formConfig?.mainDescription || ''
-  return desc.replace(/\n/g, '<br>')
-})
 </script>
 
 <style>
@@ -93,14 +91,6 @@ const formattedDescription = computed(() => {
   margin: 0 0 1.5rem;
 }
 
-.FormPage__description {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 26px;
-  text-align: right;
-  line-height: 1.6;
-  margin: 0 0 2rem;
-}
-
 .FormPage__display-text {
   color: rgba(255, 255, 255, 0.85);
   font-size: 26px;
@@ -114,5 +104,45 @@ const formattedDescription = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.FormPage__rich-text strong {
+  font-weight: 700;
+}
+
+.FormPage__rich-text em {
+  font-style: italic;
+}
+
+.FormPage__rich-text u {
+  text-decoration: underline;
+}
+
+.FormPage__rich-text s {
+  text-decoration: line-through;
+}
+
+.FormPage__rich-text ul {
+  list-style-type: disc;
+  padding-inline-start: 1.5rem;
+  margin: 0.25rem 0;
+}
+
+.FormPage__rich-text ol {
+  list-style-type: decimal;
+  padding-inline-start: 1.5rem;
+  margin: 0.25rem 0;
+}
+
+.FormPage__rich-text li {
+  margin-bottom: 0.25rem;
+}
+
+.FormPage__rich-text p {
+  margin: 0 0 0.5rem;
+}
+
+.FormPage__rich-text p:last-child {
+  margin-bottom: 0;
 }
 </style>
