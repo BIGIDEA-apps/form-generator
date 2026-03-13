@@ -1,0 +1,21 @@
+@import './fonts.css';
+
+:root {
+  --color-brand-bg: #00205B;
+  --color-brand-primary: #00CDFF;
+  --color-brand-input-bg: #334D7C;
+  --color-brand-white: #FFFFFF;
+}
+
+body {
+  font-family: 'almoni-dl-aaa', sans-serif;
+}
+
+/* Dark theme overrides for backoffice */
+.dark {
+  --ui-bg: #1a1d21;
+  --ui-bg-elevated: #23262b;
+  --ui-border: rgba(255, 255, 255, 0.1);
+  --ui-text: #ffffff;
+  --ui-text-muted: rgba(255, 255, 255, 0.7);
+}

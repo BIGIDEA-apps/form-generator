@@ -1,0 +1,74 @@
+export type InputType = 'shortText' | 'longText' | 'select' | 'radio' | 'toggle' | 'richText' | 'display'
+
+export type ValidationRule = 'email' | 'israeliPhone' | null
+
+export interface FieldOption {
+  value: string
+  label: string
+}
+
+export interface FieldDefinition {
+  key: string
+  label: string
+  presentationLabel: string
+  inputType: InputType
+  requiredDefault: boolean
+  visibleDefault: boolean
+  infoText: string
+  placeholder: string
+  defaultValue: string
+  validation: ValidationRule
+  options: FieldOption[]
+  page: string
+  isInternalOnly?: boolean
+  /** Fields that must be mutually exclusive with this one (only one visible at a time) */
+  exclusiveWith?: string[]
+}
+
+export interface FieldConfig {
+  key: string
+  label: string
+  presentationLabel: string
+  inputType: InputType
+  required: boolean
+  visible: boolean
+  infoText: string
+  placeholder: string
+  defaultValue: string
+  validation: ValidationRule
+  options: FieldOption[]
+}
+
+export interface FormPage {
+  key: string
+  title: string
+  titleFieldKey: string
+  showTitle: boolean
+  fields: string[]
+}
+
+export interface FormConfig {
+  _id?: string
+  slug: string
+  formName: string
+  formTitle: string
+  company: string
+  primaryLogo: string
+  primaryLogoSvgToWhite: boolean
+  secondaryLogo: string | null
+  secondaryLogoSvgToWhite: boolean
+  mainDescription: string
+  pages: FormPage[]
+  fields: Record<string, FieldConfig>
+  isActive: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export interface FormSubmission {
+  _id?: string
+  formId: string
+  formSlug: string
+  data: Record<string, any>
+  submittedAt?: Date | string
+}

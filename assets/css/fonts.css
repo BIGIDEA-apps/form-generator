@@ -1,0 +1,12 @@
+/*
+  almoni-dl-aaa-700 font
+  To enable: place the woff2 file in assets/fonts/ and uncomment below.
+
+  @font-face {
+    font-family: 'almoni-dl-aaa';
+    src: url('~/assets/fonts/almoni-dl-aaa-700.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+*/
