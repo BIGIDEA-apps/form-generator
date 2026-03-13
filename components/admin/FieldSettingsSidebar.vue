@@ -1,7 +1,7 @@
 <template>
   <aside class="FieldSettingsSidebar">
     <div class="FieldSettingsSidebar__panel-title">חלונית הגדרות</div>
-    <Transition name="FieldSettingsSidebar__fade">
+    <Transition name="FieldSettingsSidebar__fade" mode="out-in">
       <div v-if="field" :key="field.key" class="FieldSettingsSidebar__content">
         <div class="FieldSettingsSidebar__header">
           <h3 class="FieldSettingsSidebar__title">{{ field.label }}</h3>
@@ -17,7 +17,7 @@
             />
           </UFormGroup>
 
-          <UFormGroup v-if="field.inputType === 'display' && field.key === 'mainDescription'" label="תוכן">
+          <UFormGroup v-if="field.inputType === 'display' && isRichTextDisplayField(field.key)" label="תוכן">
             <AdminRichTextEditor
               :model-value="field.defaultValue || ''"
               @update:model-value="store.updateFieldConfig(field.key, { defaultValue: $event })"
@@ -56,6 +56,12 @@
             class="FieldSettingsSidebar__options"
           >
             <label class="FieldSettingsSidebar__options-label">אפשרויות</label>
+            <p class="FieldSettingsSidebar__options-hint">במידה והערך לשמירה ריק, התווית תשמש כערך שיישמר</p>
+            <div v-if="field.options.length" class="FieldSettingsSidebar__option-headers">
+              <span class="FieldSettingsSidebar__option-header">תווית לתצוגה</span>
+              <span class="FieldSettingsSidebar__option-header">ערך לשמירה</span>
+              <span class="FieldSettingsSidebar__option-header-spacer" />
+            </div>
             <div
               v-for="(option, idx) in field.options"
               :key="idx"
@@ -66,20 +72,20 @@
                 placeholder="תווית"
                 dir="rtl"
                 size="lg"
-                @update:model-value="updateOption(idx, 'label', $event as string)"
+                @update:model-value="updateOption(Number(idx), 'label', String($event))"
               />
               <UInput
                 :model-value="option.value"
                 placeholder="ערך"
                 size="lg"
-                @update:model-value="updateOption(idx, 'value', $event as string)"
+                @update:model-value="updateOption(Number(idx), 'value', String($event))"
               />
               <UButton
                 icon="i-heroicons-trash"
                 variant="ghost"
                 color="red"
                 size="sm"
-                @click="removeOption(idx)"
+                @click="removeOption(Number(idx))"
               />
             </div>
             <UButton
@@ -90,6 +96,32 @@
               @click="addOption"
             />
           </div>
+
+          <div v-if="isFallbackField" class="FieldSettingsSidebar__default-session">
+            <div
+              class="FieldSettingsSidebar__default-session-toggle"
+              :class="{ 'FieldSettingsSidebar__default-session-toggle--disabled': field.visible }"
+            >
+              <span class="FieldSettingsSidebar__options-label">{{ fallbackToggleLabel }}</span>
+              <UToggle
+                :model-value="isFallbackOn"
+                :disabled="field.visible"
+                size="sm"
+                @update:model-value="toggleFallbackValue"
+              />
+            </div>
+            <p class="FieldSettingsSidebar__options-hint">
+              {{ fallbackHelpText }}
+            </p>
+            <UInput
+              v-if="showFallbackInput"
+              :model-value="field.fallbackValue || ''"
+              dir="rtl"
+              size="lg"
+              :placeholder="fallbackPlaceholder"
+              @update:model-value="store.updateFieldConfig(field.key, { fallbackValue: String($event) })"
+            />
+          </div>
         </div>
       </div>
     </Transition>
@@ -97,10 +129,16 @@
 </template>
 
 <script setup lang="ts">
-import type { FieldOption } from '~/types/form'
+import type { FieldOption, FieldConfig } from '~/types/form'
 import { useFormEditorStore } from '~/stores/formEditor'
 
 const store = useFormEditorStore()
+
+const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
+
+function isRichTextDisplayField(key: string) {
+  return RICH_TEXT_DISPLAY_FIELDS.includes(key)
+}
 
 const field = computed(() => store.activeSettingsField)
 
@@ -119,8 +157,48 @@ function addOption() {
 
 function removeOption(index: number) {
   if (!field.value) return
-  const newOptions = field.value.options.filter((_, i) => i !== index)
+  const newOptions = field.value.options.filter((_: FieldOption, i: number) => i !== index)
   store.updateFieldConfig(field.value.key, { options: newOptions })
+}
+
+const FALLBACK_FIELD_KEYS = ['campSession', 'campRound'] as const
+
+const isFallbackField = computed(() => field.value && FALLBACK_FIELD_KEYS.includes(field.value.key as typeof FALLBACK_FIELD_KEYS[number]))
+
+const fallbackToggleLabel = computed(() => {
+  if (!field.value) return ''
+  return field.value.key === 'campRound' ? 'שליחת סבב דיפולטיבי' : 'שליחת מחזור דיפולטיבי'
+})
+
+const fallbackHelpText = computed(() => {
+  if (!field.value) return ''
+  return field.value.key === 'campRound'
+    ? 'במידה והטופס מיועד להרשמה עבור סבב אחד בלבד, ניתן להזין כאן את פרטי הסבב שישלחו לספרדשיט.'
+    : 'במידה והטופס מיועד להרשמה עבור מחזור אחד בלבד, ניתן להזין כאן את פרטי המחזור שישלחו לספרדשיט.'
+})
+
+const fallbackPlaceholder = computed(() => {
+  if (!field.value) return ''
+  return field.value.key === 'campRound' ? 'פרטי הסבב' : 'פרטי המחזור'
+})
+
+const isFallbackOn = ref(false)
+
+watch(field, (f: FieldConfig | null | undefined) => {
+  isFallbackOn.value = Boolean(f && FALLBACK_FIELD_KEYS.includes(f.key as typeof FALLBACK_FIELD_KEYS[number]) && f?.fallbackValue)
+}, { immediate: true })
+
+const showFallbackInput = computed(() => {
+  if (!field.value || !FALLBACK_FIELD_KEYS.includes(field.value.key as typeof FALLBACK_FIELD_KEYS[number])) return false
+  return !field.value.visible && isFallbackOn.value
+})
+
+function toggleFallbackValue(on: boolean) {
+  if (!field.value) return
+  isFallbackOn.value = on
+  if (!on) {
+    store.updateFieldConfig(field.value.key, { fallbackValue: '' })
+  }
 }
 </script>
 
@@ -171,6 +249,7 @@ function removeOption(index: number) {
 
 .FieldSettingsSidebar__body {
   padding-top: 1rem;
+  padding-inline-end: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -189,10 +268,58 @@ function removeOption(index: number) {
   font-weight: 600;
 }
 
+.FieldSettingsSidebar__options-hint {
+  font-size: 0.75rem;
+  color: var(--ui-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.FieldSettingsSidebar__option-headers {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.FieldSettingsSidebar__option-header {
+  flex: 1;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ui-text-muted);
+}
+
+.FieldSettingsSidebar__option-header-spacer {
+  width: 2.25rem;
+  flex-shrink: 0;
+}
+
 .FieldSettingsSidebar__option-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.FieldSettingsSidebar__option-row > *:first-child,
+.FieldSettingsSidebar__option-row > *:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.FieldSettingsSidebar__default-session {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.FieldSettingsSidebar__default-session-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.FieldSettingsSidebar__default-session-toggle--disabled {
+  opacity: 0.5;
 }
 
 .FieldSettingsSidebar__fade-enter-active,

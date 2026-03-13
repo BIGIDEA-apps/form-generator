@@ -9,6 +9,11 @@ export function validateEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
 
+export function validateNumbersOnly(value: string): boolean {
+  if (!value) return false
+  return /^\d+$/.test(value)
+}
+
 export function validateField(value: string, validation: string | null): string | null {
   if (!validation) return null
 
@@ -17,6 +22,8 @@ export function validateField(value: string, validation: string | null): string 
       return validateEmail(value) ? null : 'כתובת מייל לא תקינה'
     case 'israeliPhone':
       return validateIsraeliPhone(value) ? null : 'מספר טלפון לא תקין'
+    case 'numbersOnly':
+      return validateNumbersOnly(value) ? null : 'יש להזין ספרות בלבד'
     default:
       return null
   }

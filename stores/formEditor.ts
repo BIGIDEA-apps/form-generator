@@ -50,6 +50,7 @@ export const useFormEditorStore = defineStore('formEditor', {
     loadExisting(formData: FormConfig) {
       this.form = JSON.parse(JSON.stringify(formData))
       this.activePageKey = this.form!.pages[0]?.key || 'page1'
+      this.syncCompanyFieldsVisibility()
       this.isDirty = false
       this.isNew = false
     },
@@ -61,7 +62,23 @@ export const useFormEditorStore = defineStore('formEditor', {
     updateFormField(key: string, value: any) {
       if (!this.form) return
       ;(this.form as any)[key] = value
+      if (key === 'company' && String(value ?? '').trim()) {
+        this.syncCompanyFieldsVisibility()
+      }
       this.isDirty = true
+    },
+
+    syncCompanyFieldsVisibility() {
+      if (!this.form) return
+      const companyFilled = Boolean(this.form.company?.trim())
+      if (companyFilled) {
+        const companyFieldKeys = ['companyByUserString', 'companyByUserSelect']
+        for (const fieldKey of companyFieldKeys) {
+          if (this.form!.fields[fieldKey]) {
+            this.form!.fields[fieldKey].visible = false
+          }
+        }
+      }
     },
 
     updateFieldConfig(fieldKey: string, updates: Partial<FieldConfig>) {
@@ -160,7 +177,16 @@ export const useFormEditorStore = defineStore('formEditor', {
 
     getExportData(): Partial<FormConfig> {
       if (!this.form) return {}
-      const { _id, createdAt, updatedAt, ...data } = this.form as any
+      const { _id, createdAt, updatedAt, __v, ...data } = this.form as any
+      if (data.fields) {
+        for (const field of Object.values(data.fields) as FieldConfig[]) {
+          if ((field.inputType === 'select' || field.inputType === 'radio') && Array.isArray(field.options)) {
+            field.options = field.options.filter(
+              opt => String(opt?.label ?? '').trim() || String(opt?.value ?? '').trim()
+            )
+          }
+        }
+      }
       return data
     },
 

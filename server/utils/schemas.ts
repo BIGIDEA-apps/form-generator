@@ -15,8 +15,9 @@ const FieldConfigSchema = z.object({
   infoText: z.string().default(''),
   placeholder: z.string().default(''),
   defaultValue: z.string().default(''),
-  validation: z.union([z.literal('email'), z.literal('israeliPhone'), z.null()]).default(null),
+  validation: z.union([z.literal('email'), z.literal('israeliPhone'), z.literal('numbersOnly'), z.null()]).default(null),
   options: z.array(FieldOptionSchema).default([]),
+  fallbackValue: z.string().default(''),
 })
 
 const FormPageSchema = z.object({
@@ -42,12 +43,12 @@ const baseFormFields = {
   isActive: z.boolean().optional(),
 }
 
-export const FormCreateSchema = z.object(baseFormFields).strict()
+export const FormCreateSchema = z.object(baseFormFields).strip()
 
 export const FormUpdateSchema = z.object({
   ...baseFormFields,
   formName: z.string().min(1).optional(),
-}).strict()
+}).strip()
 
 export const SubmissionCreateSchema = z.object({
   formId: z.string().min(1, 'formId is required'),

@@ -10,12 +10,13 @@
             @update:model-value="emit('updatePageTitle', page.key, $event as string)"
           />
         </UFormGroup>
-        <UFormGroup label="הצגת כותרת">
+        <div class="PageConfigurator__show-title">
+          <span class="PageConfigurator__show-title-label">הצג כותרת בראש העמוד</span>
           <UToggle
             :model-value="page.showTitle !== false"
             @update:model-value="emit('updatePageShowTitle', page.key, $event)"
           />
-        </UFormGroup>
+        </div>
       </div>
     </div>
 
@@ -24,6 +25,7 @@
         v-for="field in fields"
         :key="field.key"
         :field="field"
+        :is-disabled-by-main-company="isCompanyOverridden && isCompanyFieldOnPage1(field)"
         @update="(key, updates) => emit('updateField', key, updates)"
         @open-settings="store.openFieldSettings"
       />
@@ -35,7 +37,7 @@
 import type { FieldConfig, FormPage } from '~/types/form'
 import { useFormEditorStore } from '~/stores/formEditor'
 
-defineProps<{
+const props = defineProps<{
   page: FormPage
   fields: FieldConfig[]
 }>()
@@ -47,6 +49,12 @@ const emit = defineEmits<{
 }>()
 
 const store = useFormEditorStore()
+
+const isCompanyOverridden = computed(() => Boolean(store.form?.company?.trim()))
+
+function isCompanyFieldOnPage1(field: FieldConfig) {
+  return props.page.key === 'page1' && (field.key === 'companyByUserString' || field.key === 'companyByUserSelect')
+}
 </script>
 
 <style>
@@ -66,7 +74,18 @@ const store = useFormEditorStore()
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.75rem;
-  align-items: flex-end;
+  align-items: center;
+}
+
+.PageConfigurator__show-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.PageConfigurator__show-title-label {
+  font-size: 0.875rem;
+  color: var(--ui-text-muted);
 }
 
 .PageConfigurator__fields {

@@ -9,7 +9,6 @@
 
 .FormField__label {
   color: var(--color-brand-white);
-  font-weight: 700;
 }
 
 .FormField__required {
@@ -22,8 +21,7 @@
 }
 
 .FormField__input,
-.FormField__textarea,
-.FormField__select {
+.FormField__textarea {
   width: 100%;
   background: var(--color-brand-input-bg);
   color: var(--color-brand-white);
@@ -36,14 +34,12 @@
 }
 
 .FormField__input:focus,
-.FormField__textarea:focus,
-.FormField__select:focus {
+.FormField__textarea:focus {
   border-color: var(--color-brand-primary);
 }
 
 .FormField__input--error,
-.FormField__textarea--error,
-.FormField__select--error {
+.FormField__textarea--error {
   border-color: #ef4444;
 }
 
@@ -59,28 +55,6 @@
 
 .FormField__select-wrapper {
   position: relative;
-}
-
-.FormField__select {
-  appearance: none;
-  cursor: pointer;
-  padding-left: 2.5rem;
-}
-
-.FormField__select option {
-  background: var(--color-brand-input-bg);
-  color: white;
-}
-
-.FormField__select-chevron {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  color: rgba(255, 255, 255, 0.5);
-  pointer-events: none;
 }
 
 .FormField__error {

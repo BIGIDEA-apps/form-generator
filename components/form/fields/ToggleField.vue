@@ -4,7 +4,6 @@
       {{ field.presentationLabel }}
       <span v-if="field.required" class="FormField__required">*</span>
     </label>
-    <p v-if="field.infoText" class="FormField__info">{{ field.infoText }}</p>
     <button
       type="button"
       class="FormField__toggle"
@@ -17,6 +16,7 @@
         <span class="FormField__toggle-thumb" />
       </span>
     </button>
+    <p v-if="field.infoText" class="FormField__info">{{ field.infoText }}</p>
     <p v-if="error" class="FormField__error">{{ error }}</p>
   </div>
 </template>

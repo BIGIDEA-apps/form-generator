@@ -1,6 +1,7 @@
 <template>
-  <div class="FieldPreviewCard">
-    <div class="FieldPreviewCard__toolbar">
+  <div class="FieldPreviewCard" :class="{ 'FieldPreviewCard--disabled': isDisabledByMainCompany }">
+    <div class="FieldPreviewCard__content">
+      <div class="FieldPreviewCard__toolbar">
       <div class="FieldPreviewCard__toolbar-right" dir="rtl">
         <UToggle
           :model-value="field.visible"
@@ -33,8 +34,14 @@
     <div v-if="field.visible" class="FieldPreviewCard__preview">
       <div class="FieldPreviewCard__preview-inner">
         <template v-if="field.inputType === 'display'">
-          <div class="FormPage__display-text">
-            {{ field.defaultValue }}
+          <div
+            :class="[
+              'FormPage__display-text',
+              isRichTextDisplayField(field.key) ? 'FormPage__rich-text' : '',
+            ]"
+          >
+            <span v-if="isRichTextDisplayField(field.key) && field.defaultValue?.startsWith?.('<')" v-html="field.defaultValue" />
+            <template v-else>{{ field.defaultValue }}</template>
           </div>
         </template>
 
@@ -69,6 +76,13 @@
         />
       </div>
     </div>
+    <div v-if="(field.key === 'campSession' || field.key === 'campRound') && !field.visible && field.fallbackValue" class="FieldPreviewCard__fallback-info" dir="rtl">
+      {{ field.key === 'campRound' ? 'סבב דיפולטיבי' : 'מחזור דיפולטיבי' }}: {{ field.fallbackValue }}
+    </div>
+    </div>
+    <UTooltip v-if="isDisabledByMainCompany" text="The company name has already been selected in the main form settings.">
+      <div class="FieldPreviewCard__disable-overlay" />
+    </UTooltip>
   </div>
 </template>
 
@@ -80,9 +94,16 @@ import SelectField from '~/components/form/fields/SelectField.vue'
 import RadioField from '~/components/form/fields/RadioField.vue'
 import ToggleField from '~/components/form/fields/ToggleField.vue'
 
-const props = defineProps<{
+defineProps<{
   field: FieldConfig
+  isDisabledByMainCompany?: boolean
 }>()
+
+const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
+
+function isRichTextDisplayField(key: string) {
+  return RICH_TEXT_DISPLAY_FIELDS.includes(key)
+}
 
 const emit = defineEmits<{
   update: [fieldKey: string, updates: Partial<FieldConfig>]
@@ -92,10 +113,30 @@ const emit = defineEmits<{
 
 <style>
 .FieldPreviewCard {
+  position: relative;
   border: 1px solid var(--ui-border);
   border-radius: 0.75rem;
   overflow: hidden;
   transition: opacity 0.2s;
+}
+
+.FieldPreviewCard--disabled {
+  opacity: 0.6;
+}
+
+.FieldPreviewCard__disable-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: not-allowed;
+}
+
+.FieldPreviewCard__fallback-info {
+  font-size: 0.75rem;
+  color: var(--ui-text-muted);
+  padding: 0.375rem 1rem;
+  background: var(--ui-bg-elevated);
+  border-top: 1px dashed var(--ui-border);
 }
 
 .FieldPreviewCard__toolbar {
@@ -136,73 +177,71 @@ const emit = defineEmits<{
   white-space: nowrap;
 }
 
+/* Preview matches public form UI at ~2/3 scale */
 .FieldPreviewCard__preview {
   background: var(--color-brand-bg);
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.5rem;
   pointer-events: none;
   user-select: none;
+  direction: rtl;
+  font-family: 'almoni-dl-aaa', sans-serif;
+  zoom: 0.67;
 }
 
-/* Admin preview size overrides (shared base in form-fields.css) */
+/* Same sizing as PublicFormPage */
 .FieldPreviewCard__preview .FormField__label {
-  font-size: 1rem;
+  font-size: 26px;
 }
 
 .FieldPreviewCard__preview .FormField__info {
-  font-size: 0.75rem;
+  font-size: 16px;
 }
 
+/* Override AdminLayout input styles – preview must use front form appearance */
 .FieldPreviewCard__preview .FormField__input,
 .FieldPreviewCard__preview .FormField__textarea,
-.FieldPreviewCard__preview .FormField__select {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+.FieldPreviewCard__preview .FormField__select-trigger {
+  background: var(--color-brand-input-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: var(--color-brand-white) !important;
+  font-size: 22px;
+  padding: 0.75rem 1rem;
+  box-shadow: none !important;
+}
+
+.FieldPreviewCard__preview .FormField__input::placeholder,
+.FieldPreviewCard__preview .FormField__textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.FieldPreviewCard__preview .FormField__error {
+  font-size: 16px;
+}
+
+.FieldPreviewCard__preview .FormField__radio-option {
+  font-size: 22px;
 }
 
 .FieldPreviewCard__preview .FormField__textarea {
   resize: none;
-  min-height: 4rem;
-}
-
-.FieldPreviewCard__preview .FormField__select {
-  cursor: default;
-  padding-left: 2rem;
-}
-
-.FieldPreviewCard__preview .FormField__select-chevron {
-  left: 0.5rem;
-  width: 1rem;
-  height: 1rem;
-}
-
-.FieldPreviewCard__preview .FormField__radio-group {
-  gap: 0.375rem;
-}
-
-.FieldPreviewCard__preview .FormField__radio-option {
-  font-size: 0.875rem;
-}
-
-.FieldPreviewCard__preview .FormField__radio-custom {
-  width: 1rem;
-  height: 1rem;
-}
-
-.FieldPreviewCard__preview .FormField__toggle-track {
-  width: 2.5rem;
-  height: 1.25rem;
-}
-
-.FieldPreviewCard__preview .FormField__toggle-thumb {
-  top: 0.125rem;
-  right: 0.125rem;
-  width: 1rem;
-  height: 1rem;
 }
 
 .FieldPreviewCard__preview .FormPage__display-text {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1rem;
+  color: var(--color-brand-white);
+  font-size: 22px;
   text-align: right;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
 }
+
+.FieldPreviewCard__preview .FormPage__rich-text strong { font-weight: 700; }
+.FieldPreviewCard__preview .FormPage__rich-text em { font-style: italic; }
+.FieldPreviewCard__preview .FormPage__rich-text u { text-decoration: underline; }
+.FieldPreviewCard__preview .FormPage__rich-text s { text-decoration: line-through; }
+.FieldPreviewCard__preview .FormPage__rich-text ul { list-style-type: disc; padding-inline-start: 1.5rem; margin: 0.25rem 0; }
+.FieldPreviewCard__preview .FormPage__rich-text ol { list-style-type: decimal; padding-inline-start: 1.5rem; margin: 0.25rem 0; }
+.FieldPreviewCard__preview .FormPage__rich-text li { margin-bottom: 0.25rem; }
+.FieldPreviewCard__preview .FormPage__rich-text p { margin: 0 0 0.5rem; }
+.FieldPreviewCard__preview .FormPage__rich-text p:last-child { margin-bottom: 0; }
 </style>

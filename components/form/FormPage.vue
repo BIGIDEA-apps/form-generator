@@ -5,7 +5,7 @@
     <div class="FormPage__fields">
       <template v-for="field in fields" :key="field.key">
         <div
-          v-if="field.inputType === 'display' && field.key === 'mainDescription'"
+          v-if="field.inputType === 'display' && isRichTextDisplayField(field.key)"
           class="FormPage__display-text FormPage__rich-text"
           v-html="store.formConfig?.fields[field.key]?.defaultValue || field.defaultValue"
         />
@@ -74,6 +74,12 @@ defineProps<{
 
 const store = useFormSubmissionStore()
 
+const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
+
+function isRichTextDisplayField(key: string) {
+  return RICH_TEXT_DISPLAY_FIELDS.includes(key)
+}
+
 </script>
 
 <style>
@@ -92,8 +98,8 @@ const store = useFormSubmissionStore()
 }
 
 .FormPage__display-text {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 26px;
+  color: var(--color-brand-white);
+  font-size: 22px;
   text-align: right;
   line-height: 1.6;
   margin-bottom: 1.5rem;

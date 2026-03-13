@@ -127,6 +127,8 @@ export const useFormSubmissionStore = defineStore('formSubmission', {
       for (const [key, field] of Object.entries(this.formConfig.fields)) {
         if (field.visible && this.values[key] !== undefined) {
           data[key] = this.values[key]
+        } else if (!field.visible && field.fallbackValue) {
+          data[key] = field.fallbackValue
         }
       }
 

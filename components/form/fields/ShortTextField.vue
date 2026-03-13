@@ -4,7 +4,6 @@
       {{ field.presentationLabel }}
       <span v-if="field.required" class="FormField__required">*</span>
     </label>
-    <p v-if="field.infoText" class="FormField__info">{{ field.infoText }}</p>
     <input
       type="text"
       class="FormField__input"
@@ -14,6 +13,7 @@
       dir="rtl"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     >
+    <p v-if="field.infoText" class="FormField__info">{{ field.infoText }}</p>
     <p v-if="error" class="FormField__error">{{ error }}</p>
   </div>
 </template>

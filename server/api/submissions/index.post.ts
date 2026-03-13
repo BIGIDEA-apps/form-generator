@@ -14,6 +14,11 @@ function validateEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
 
+function validateNumbersOnly(value: string): boolean {
+  if (!value) return false
+  return /^\d+$/.test(value)
+}
+
 // TODO: Consider adding Cloudflare Turnstile or reCAPTCHA for bot protection
 
 export default defineEventHandler(async (event) => {
@@ -66,6 +71,9 @@ export default defineEventHandler(async (event) => {
       }
       if (field.validation === 'israeliPhone' && !validateIsraeliPhone(String(value))) {
         errors[key] = `${field.label || key} has an invalid phone number`
+      }
+      if (field.validation === 'numbersOnly' && !validateNumbersOnly(String(value))) {
+        errors[key] = `${field.label || key} must contain only digits`
       }
     }
   }

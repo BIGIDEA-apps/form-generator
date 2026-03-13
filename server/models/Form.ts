@@ -39,6 +39,7 @@ const FieldConfigSchema = new Schema(
     defaultValue: { type: String, default: '' },
     validation: { type: String, default: null },
     options: { type: [FieldOptionSchema], default: [] },
+    fallbackValue: { type: String, default: '' },
   },
   { _id: false },
 )

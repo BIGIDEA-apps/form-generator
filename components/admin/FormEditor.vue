@@ -21,6 +21,7 @@
               size="lg"
               @update:model-value="store.updateFormField('company', $event)"
             />
+            <p class="FormEditor__field-hint">במידה ומדובר בטופס כללי, יש להשאיר שדה זה ריק</p>
           </UFormGroup>
           <UFormGroup label="Slug (כתובת URL)">
             <div class="FormEditor__slug-row" dir="ltr">
@@ -217,5 +218,12 @@ function getPageFields(pageKey: string): FieldConfig[] {
   color: #ef4444;
   font-size: 0.875rem;
   margin: 0.25rem 0 0;
+}
+
+.FormEditor__field-hint {
+  font-size: 0.75rem;
+  color: var(--ui-text-muted);
+  margin: 0.25rem 0 0;
+  line-height: 1.4;
 }
 </style>

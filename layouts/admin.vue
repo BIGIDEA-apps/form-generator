@@ -127,4 +127,17 @@ const userMenuItems = computed(() => [
   box-shadow: none !important;
   border-color: var(--ui-border);
 }
+
+/* Preview inputs must use front form styling (brand colors), not back office */
+.AdminLayout .FieldPreviewCard__preview input,
+.AdminLayout .FieldPreviewCard__preview textarea {
+  background: var(--color-brand-input-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: var(--color-brand-white) !important;
+}
+
+.AdminLayout .FieldPreviewCard__preview input::placeholder,
+.AdminLayout .FieldPreviewCard__preview textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
 </style>

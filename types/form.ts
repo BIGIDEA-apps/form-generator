@@ -1,6 +1,6 @@
 export type InputType = 'shortText' | 'longText' | 'select' | 'radio' | 'toggle' | 'richText' | 'display'
 
-export type ValidationRule = 'email' | 'israeliPhone' | null
+export type ValidationRule = 'email' | 'israeliPhone' | 'numbersOnly' | null
 
 export interface FieldOption {
   value: string
@@ -23,6 +23,7 @@ export interface FieldDefinition {
   isInternalOnly?: boolean
   /** Fields that must be mutually exclusive with this one (only one visible at a time) */
   exclusiveWith?: string[]
+  fallbackValue?: string
 }
 
 export interface FieldConfig {
@@ -37,6 +38,7 @@ export interface FieldConfig {
   defaultValue: string
   validation: ValidationRule
   options: FieldOption[]
+  fallbackValue?: string
 }
 
 export interface FormPage {

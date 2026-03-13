@@ -214,7 +214,7 @@ onUnmounted(() => {
 
 .PublicFormPage .FormField__input,
 .PublicFormPage .FormField__textarea,
-.PublicFormPage .FormField__select {
+.PublicFormPage .FormField__select-trigger {
   font-size: 22px;
 }
 

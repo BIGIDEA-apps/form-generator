@@ -47,6 +47,12 @@ export default defineEventHandler(async (event) => {
       if (field.inputType === 'display' && field.defaultValue) {
         field.defaultValue = sanitizeHtml(field.defaultValue)
       }
+      if ((field.inputType === 'select' || field.inputType === 'radio') && Array.isArray(field.options)) {
+        field.options = field.options.filter(
+          (opt: { label?: string; value?: string }) =>
+            String(opt?.label ?? '').trim() || String(opt?.value ?? '').trim()
+        )
+      }
     }
   }
 
