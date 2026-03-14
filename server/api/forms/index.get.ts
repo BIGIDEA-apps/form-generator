@@ -20,13 +20,31 @@ export default defineEventHandler(async (event) => {
     : {}
 
   const [items, total] = await Promise.all([
-    FormModel
-      .find(filter)
-      .select('_id slug formName formTitle company isActive createdAt updatedAt spreadsheet campLandingPageUrl columnMappingMode columnMapping sourceTemplateId')
-      .sort({ updatedAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean(),
+    FormModel.aggregate([
+      { $match: filter },
+      { $sort: { updatedAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'submissions',
+          localField: '_id',
+          foreignField: 'formId',
+          as: '_subs',
+        },
+      },
+      {
+        $addFields: {
+          submissionsCount: { $size: '$_subs' },
+        },
+      },
+      {
+        $project: {
+          _subs: 0,
+          __v: 0,
+        },
+      },
+    ]),
     FormModel.countDocuments(filter),
   ])
 

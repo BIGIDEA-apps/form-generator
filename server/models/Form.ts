@@ -24,6 +24,8 @@ export interface IForm extends Document {
   columnMappingMode: 'default' | 'custom'
   columnMapping: Record<string, string>
   sourceTemplateId: string
+  successTitle?: string
+  successMessage?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -101,6 +103,8 @@ const FormSchema = new Schema<IForm>(
     columnMappingMode: { type: String, enum: ['default', 'custom'], default: 'default' },
     columnMapping: { type: Schema.Types.Mixed, default: {} },
     sourceTemplateId: { type: String, default: '' },
+    successTitle: { type: String, default: '' },
+    successMessage: { type: String, default: '' },
   },
   { timestamps: true },
 )

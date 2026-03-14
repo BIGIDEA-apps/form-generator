@@ -25,8 +25,20 @@
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-linecap="round" stroke-linejoin="round" />
             <polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
-          <h2>הטופס נשלח בהצלחה!</h2>
-          <p>תודה על ההרשמה. נחזור אליכם בהקדם.</p>
+          <h2>{{ successTitle }}</h2>
+          <div
+            v-if="successMessageHtml"
+            class="PublicFormPage__success-message PublicFormPage__success-message--rich"
+            v-html="successMessageHtml"
+          />
+          <p v-else>{{ successMessagePlain }}</p>
+          <button
+            type="button"
+            class="PublicFormPage__success-btn"
+            @click="handleSubmitAnother"
+          >
+            הרשמה נוספת
+          </button>
         </div>
       </div>
     </template>
@@ -97,6 +109,17 @@ const currentPageTitle = computed(() => {
   if (!page) return ''
   return page.title || ''
 })
+
+const successTitle = computed(() =>
+  formConfig.value?.successTitle?.trim() || 'הטופס נשלח בהצלחה!',
+)
+
+const successMessageHtml = computed(() => {
+  const msg = formConfig.value?.successMessage?.trim()
+  return msg || ''
+})
+
+const successMessagePlain = computed(() => 'תודה על ההרשמה. נחזור אליכם בהקדם.')
 
 function focusPageTop() {
   nextTick(() => {
@@ -184,6 +207,13 @@ async function handleSubmit() {
   }
 }
 
+function handleSubmitAnother() {
+  if (formConfig.value) {
+    store.init(formConfig.value)
+    nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+  }
+}
+
 onUnmounted(() => {
   store.reset()
 })
@@ -244,12 +274,19 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .PublicFormPage__success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 3rem 1rem;
   color: white;
+  width: 100%;
+  max-width: 32rem;
 }
 
 .PublicFormPage__success-icon {
@@ -267,6 +304,53 @@ onUnmounted(() => {
 .PublicFormPage__success-content p {
   opacity: 0.8;
   font-size: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.PublicFormPage__success-message {
+  opacity: 0.8;
+  font-size: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.PublicFormPage__success-message--rich p {
+  margin: 0 0 0.5rem;
+}
+
+.PublicFormPage__success-message--rich p:last-child {
+  margin-bottom: 0;
+}
+
+.PublicFormPage__success-message--rich ul,
+.PublicFormPage__success-message--rich ol {
+  padding-inline-start: 1.5rem;
+  margin: 0.25rem 0;
+}
+
+.PublicFormPage__success-message--rich ul {
+  list-style-type: disc;
+}
+
+.PublicFormPage__success-message--rich ol {
+  list-style-type: decimal;
+}
+
+.PublicFormPage__success-btn {
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid var(--color-brand-primary);
+  background: var(--color-brand-primary);
+  color: var(--color-brand-white);
+  font-family: inherit;
+}
+
+.PublicFormPage__success-btn:hover {
+  background: var(--color-brand-white);
+  color: var(--color-brand-primary);
 }
 
 /* Public form size overrides (shared base in form-fields.css) */

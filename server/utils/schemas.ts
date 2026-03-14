@@ -67,6 +67,8 @@ const baseFormFields = {
   columnMappingMode: z.enum(['default', 'custom']).optional(),
   columnMapping: z.record(z.string(), z.string()).optional(),
   sourceTemplateId: z.string().optional(),
+  successTitle: z.string().optional(),
+  successMessage: z.string().optional(),
 }
 
 export const FormCreateSchema = z.object(baseFormFields).strip()

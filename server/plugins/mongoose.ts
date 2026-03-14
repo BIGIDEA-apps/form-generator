@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
 import { consola } from 'consola'
-import { AppSettingsModel } from '~/server/models/AppSettings'
 
 const MAX_RETRIES = 3
 const RETRY_DELAY_MS = 2000
@@ -34,7 +33,6 @@ export default defineNitroPlugin(async () => {
       mongoose.connection.on('disconnected', () => {
         consola.warn('[Mongoose] Disconnected from MongoDB')
       })
-      await migrateLogoPath()
       return
     }
     catch (err) {
@@ -45,18 +43,6 @@ export default defineNitroPlugin(async () => {
       }
     }
   }
-
-async function migrateLogoPath() {
-  const OLD = '/img/logos/bigidea-logo.png'
-  const NEW = '/img/logos/bigidea-logo.svg'
-  const result = await AppSettingsModel.updateMany(
-    { defaultPrimaryLogo: OLD },
-    { $set: { defaultPrimaryLogo: NEW } },
-  )
-  if (result.modifiedCount > 0) {
-    consola.info(`[Migrate] Updated ${result.modifiedCount} AppSettings document(s): logo PNG → SVG`)
-  }
-}
 
   const isProduction = process.env.NODE_ENV === 'production'
   if (isProduction) {

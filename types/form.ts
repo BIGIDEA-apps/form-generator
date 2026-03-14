@@ -83,6 +83,12 @@ export interface FormConfig {
   sourceTemplateId?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  /** Number of submissions (included in list API only) */
+  submissionsCount?: number
+  /** Success screen title (short text) */
+  successTitle?: string
+  /** Success screen message (rich text) */
+  successMessage?: string
 }
 
 export interface FormSubmission {

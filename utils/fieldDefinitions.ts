@@ -69,7 +69,7 @@ export const FIELD_DEFINITIONS: FieldDefinition[] = [
     infoText: '',
     placeholder: '',
     defaultValue:
-      'אנא קראו בתשומת לב את המידע והפירוט על המסלולים השונים באתר לפני מילוי הטופס.\nשימו לב - יש למלא את הטופס בנפרד לכל ילד/ה',
+      '<p style="text-align: center">אנא קראו בתשומת לב את המידע והפירוט על המסלולים השונים באתר לפני מילוי הטופס.</p><p style="text-align: center"><strong>שימו לב</strong> - יש למלא את הטופס בנפרד לכל ילד/ה</p>',
     validation: null,
     options: [],
     page: 'page1',
@@ -826,10 +826,12 @@ export function getDefaultFormConfig(): Omit<import('~/types/form').FormConfig, 
     secondaryLogo: null,
     secondaryLogoSvgToWhite: false,
     mainDescription:
-      'אנא קראו בתשומת לב את המידע והפירוט על המסלולים השונים באתר לפני מילוי הטופס.\nשימו לב - יש למלא את הטופס בנפרד לכל ילד/ה',
+      '<p style="text-align: center">אנא קראו בתשומת לב את המידע והפירוט על המסלולים השונים באתר לפני מילוי הטופס.</p><p style="text-align: center"><strong>שימו לב</strong> - יש למלא את הטופס בנפרד לכל ילד/ה</p>',
     campLandingPageUrl: '',
     pages: getDefaultPages(),
     fields: getDefaultFields(),
     isActive: true,
+    successTitle: 'הטופס נשלח בהצלחה!',
+    successMessage: 'תודה על ההרשמה. נחזור אליכם בהקדם.',
   }
 }

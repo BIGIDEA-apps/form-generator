@@ -66,6 +66,8 @@ function isSvg(url: string | null): boolean {
   font-weight: 700;
   line-height: 1.4;
   margin: 0;
+  width: 100%;
+  text-align: center;
 }
 
 @media (max-width: 768px) {

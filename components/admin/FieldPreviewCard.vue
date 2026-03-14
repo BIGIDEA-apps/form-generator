@@ -47,6 +47,7 @@
             :class="[
               'FormPage__display-text',
               isRichTextDisplayField(field.key) ? 'FormPage__rich-text' : '',
+              field.key === 'mainDescription' ? 'FormPage__display-text--centered' : '',
             ]"
           >
             <span v-if="isRichTextDisplayField(field.key) && field.defaultValue?.startsWith?.('<')" v-html="field.defaultValue" />

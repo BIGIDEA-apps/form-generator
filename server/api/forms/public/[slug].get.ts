@@ -6,6 +6,7 @@ const PUBLIC_FIELDS = [
   'primaryLogo', 'primaryLogoSvgToWhite',
   'secondaryLogo', 'secondaryLogoSvgToWhite',
   'mainDescription', 'pages', 'fields', 'isActive',
+  'successTitle', 'successMessage',
 ].join(' ')
 
 const SLUG_REGEX = /^[a-zA-Z0-9_-]{1,100}$/
@@ -35,6 +36,9 @@ export default defineEventHandler(async (event) => {
   }
   if (typeof formObj.mainDescription === 'string') {
     formObj.mainDescription = sanitizeHtml(formObj.mainDescription)
+  }
+  if (typeof formObj.successMessage === 'string' && formObj.successMessage) {
+    formObj.successMessage = sanitizeHtml(formObj.successMessage)
   }
 
   return formObj

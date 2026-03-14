@@ -22,6 +22,10 @@
           {{ formatDate(row.createdAt) }}
         </template>
 
+        <template #submissionsCount-data="{ row }">
+          <span class="FormsList__cell-truncate">{{ row.submissionsCount ?? 0 }}</span>
+        </template>
+
         <template #actions-data="{ row }">
           <div class="FormsList__actions" @click.stop dir="rtl">
             <UTooltip text="לצפייה בטופס">
@@ -128,6 +132,7 @@ const columns = [
   { key: 'formName', label: 'שם הטופס' },
   { key: 'company', label: 'חברה' },
   { key: 'status', label: 'סטטוס' },
+  { key: 'submissionsCount', label: 'הרשמות' },
   { key: 'createdAt', label: 'תאריך יצירה' },
   { key: 'actions', label: '' },
 ]

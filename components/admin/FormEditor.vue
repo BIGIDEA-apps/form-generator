@@ -91,7 +91,30 @@
                 @click="openFormMappingModal"
               />
             </template>
-          </div>
+      </div>
+      </div>
+      </div>
+
+      <hr class="FormEditor__divider" />
+
+      <div class="FormEditor__subsection FormEditor__success-screen">
+        <h3 class="FormEditor__subsection-title">מסך סיום</h3>
+        <div class="FormEditor__success-screen-fields">
+          <UFormGroup label="כותרת הודעת הצלחה">
+            <UInput
+              :model-value="store.form?.successTitle ?? ''"
+              dir="rtl"
+              size="lg"
+              placeholder="הטופס נשלח בהצלחה!"
+              @update:model-value="store.updateFormField('successTitle', $event)"
+            />
+          </UFormGroup>
+          <UFormGroup label="תוכן הודעת הצלחה">
+            <AdminRichTextEditor
+              :model-value="store.form?.successMessage ?? ''"
+              @update:model-value="store.updateFormField('successMessage', $event)"
+            />
+          </UFormGroup>
         </div>
       </div>
 
@@ -341,8 +364,15 @@ function getPageFields(pageKey: string): FieldConfig[] {
 
 .FormEditor__form-settings,
 .FormEditor__form-header,
-.FormEditor__spreadsheet-settings {
+.FormEditor__spreadsheet-settings,
+.FormEditor__success-screen {
   max-width: 28rem;
+}
+
+.FormEditor__success-screen-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .FormEditor__form-settings-fields,

@@ -53,6 +53,9 @@ export default defineEventHandler(async (event) => {
   if (sanitized.mainDescription) {
     sanitized.mainDescription = sanitizeHtml(sanitized.mainDescription)
   }
+  if (sanitized.successMessage) {
+    sanitized.successMessage = sanitizeHtml(sanitized.successMessage)
+  }
 
   if (sanitized.fields) {
     for (const field of Object.values(sanitized.fields) as any[]) {

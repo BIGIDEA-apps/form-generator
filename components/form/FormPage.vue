@@ -6,7 +6,7 @@
       <template v-for="field in fields" :key="field.key">
         <div
           v-if="field.inputType === 'display' && isRichTextDisplayField(field.key)"
-          class="FormPage__display-text FormPage__rich-text"
+          :class="['FormPage__display-text', 'FormPage__rich-text', { 'FormPage__display-text--centered': field.key === 'mainDescription' }]"
           v-html="store.formConfig?.fields[field.key]?.defaultValue || field.defaultValue"
         />
         <div v-else-if="field.inputType === 'display'" class="FormPage__display-text">
@@ -185,6 +185,11 @@ function isRichTextDisplayField(key: string) {
 
 .FormPage__rich-text p:last-child {
   margin-bottom: 0;
+}
+
+.FormPage__display-text--centered,
+.FormPage__display-text--centered.FormPage__rich-text p {
+  text-align: center;
 }
 
 @media (max-width: 768px) {
