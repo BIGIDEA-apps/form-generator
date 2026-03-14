@@ -1,4 +1,5 @@
 import { FormModel } from '~/server/models/Form'
+import { requireValidObjectId } from '~/server/utils/objectId'
 import { sanitizeHtml } from '~/server/utils/sanitizeHtml'
 import { FormUpdateSchema } from '~/server/utils/schemas'
 
@@ -21,7 +22,7 @@ async function generateUniqueBigIdeaSlug(): Promise<string> {
 export default defineEventHandler(async (event) => {
   await requireAuth(event)
 
-  const id = getRouterParam(event, 'id')
+  const id = requireValidObjectId(event, getRouterParam(event, 'id'))
   const body = await readBody(event)
 
   const parsed = FormUpdateSchema.safeParse(body)

@@ -42,7 +42,7 @@
             />
           </UFormGroup>
 
-          <UFormGroup v-if="field.inputType !== 'display'" label="Placeholder">
+          <UFormGroup v-if="!FIELDS_WITHOUT_PLACEHOLDER.includes(field.inputType)" label="Placeholder">
             <UInput
               :model-value="field.placeholder"
               dir="rtl"
@@ -52,7 +52,7 @@
           </UFormGroup>
 
           <div
-            v-if="field.inputType === 'select' || field.inputType === 'radio'"
+            v-if="field.inputType === 'select' || field.inputType === 'radio' || field.inputType === 'checkboxOther'"
             class="FieldSettingsSidebar__options"
           >
             <label class="FieldSettingsSidebar__options-label">אפשרויות</label>
@@ -95,6 +95,35 @@
               size="sm"
               @click="addOption"
             />
+            <p v-if="field.inputType === 'checkboxOther'" class="FieldSettingsSidebar__options-hint">
+              אפשרות "אחר (נא לפרט)" מוצגת אוטומטית בטופס
+            </p>
+          </div>
+
+          <div
+            v-if="field.inputType === 'booleanRadio'"
+            class="FieldSettingsSidebar__options"
+          >
+            <label class="FieldSettingsSidebar__options-label">אפשרויות (שלילי / חיובי)</label>
+            <div
+              v-for="(option, idx) in field.options"
+              :key="idx"
+              class="FieldSettingsSidebar__option-row"
+            >
+              <UInput
+                :model-value="option.label"
+                :placeholder="idx === 0 ? 'תווית שלילית' : 'תווית חיובית'"
+                dir="rtl"
+                size="lg"
+                @update:model-value="updateOption(Number(idx), 'label', String($event))"
+              />
+              <UInput
+                :model-value="option.value"
+                placeholder="ערך"
+                size="lg"
+                @update:model-value="updateOption(Number(idx), 'value', String($event))"
+              />
+            </div>
           </div>
 
           <div v-if="field.inputType === 'toggle'" class="FieldSettingsSidebar__toggle-labels">
@@ -155,7 +184,9 @@ import { useFormEditorStore } from '~/stores/formEditor'
 
 const store = useFormEditorStore()
 
-const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
+const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'camperDetailsMainText', 'camperDetailsAppendixText', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
+
+const FIELDS_WITHOUT_PLACEHOLDER = ['display', 'radio', 'booleanRadio', 'checkboxOther', 'toggle', 'checkbox']
 
 function isRichTextDisplayField(key: string) {
   return RICH_TEXT_DISPLAY_FIELDS.includes(key)

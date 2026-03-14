@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV !== 'production' },
 
   imports: {
     dirs: ['composables', 'composables/**'],
@@ -19,7 +19,7 @@ export default defineNuxtConfig({
       htmlAttrs: { dir: 'rtl', lang: 'he' },
       title: 'מחולל הטפסים של BIGIDEA',
       link: [
-        { rel: 'icon', type: 'image/png', href: '/img/logos/bigidea-icon.png' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/img/logos/bigidea-logo.svg' },
       ],
     },
   },
@@ -59,6 +59,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       formBaseUrl: process.env.PUBLIC_FORM_BASE_URL || '',
+      googleApiKey: process.env.GOOGLE_API_KEY || '',
+      googlePickerAppId: process.env.GOOGLE_PICKER_APP_ID || '',
     },
     mongodbUri: process.env.MONGODB_URI || '',
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || '',

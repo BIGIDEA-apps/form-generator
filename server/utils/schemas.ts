@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { normalizeWebAddress } from '~/utils/urlUtils'
 
 const FieldOptionSchema = z.object({
   value: z.string(),
@@ -20,6 +21,10 @@ const FieldConfigSchema = z.object({
   fallbackValue: z.string().default(''),
   togglePositiveLabel: z.string().default(''),
   toggleNegativeLabel: z.string().default(''),
+  conditionalVisibility: z.object({
+    dependsOn: z.string(),
+    showWhen: z.string(),
+  }).optional(),
 })
 
 const FormPageSchema = z.object({
@@ -43,6 +48,25 @@ const baseFormFields = {
   pages: z.array(FormPageSchema).optional(),
   fields: z.record(z.string(), FieldConfigSchema).optional(),
   isActive: z.boolean().optional(),
+  spreadsheet: z.object({
+    id: z.string(),
+    name: z.string(),
+    url: z.string(),
+    folderId: z.string().optional(),
+  }).optional(),
+  campLandingPageUrl: z
+    .string()
+    .optional()
+    .transform((val) => {
+      const trimmed = (val ?? '').trim()
+      if (!trimmed) return ''
+      const normalized = normalizeWebAddress(trimmed)
+      return normalized ?? trimmed
+    })
+    .refine((val) => !val || normalizeWebAddress(val), 'כתובת URL לא תקינה'),
+  columnMappingMode: z.enum(['default', 'custom']).optional(),
+  columnMapping: z.record(z.string(), z.string()).optional(),
+  sourceTemplateId: z.string().optional(),
 }
 
 export const FormCreateSchema = z.object(baseFormFields).strip()

@@ -1,17 +1,18 @@
 <template>
-  <main class="PublicFormPage">
-    <div v-if="isLoading" class="PublicFormPage__loading">
-      <div class="PublicFormPage__loading-spinner" />
+  <main class="PublicFormPage" lang="he" dir="rtl">
+    <div v-if="isLoading" class="PublicFormPage__loading" role="status" aria-label="טוען...">
+      <div class="PublicFormPage__loading-spinner" aria-hidden="true" />
+      <span class="sr-only">טוען טופס...</span>
     </div>
 
-    <div v-else-if="error || !formConfig" class="PublicFormPage__error">
-      <img src="/img/logos/bigidea-logo.png" alt="BIGIDEA" class="PublicFormPage__error-logo">
+    <div v-else-if="error || !formConfig" class="PublicFormPage__error" role="alert">
+      <img src="/img/logos/bigidea-logo.svg" alt="BIGIDEA" class="PublicFormPage__error-logo">
       <h1>הטופס לא נמצא</h1>
       <p>ייתכן שהקישור שגוי או שהטופס אינו פעיל</p>
     </div>
 
     <template v-else-if="store.submitted">
-      <div class="PublicFormPage__success">
+      <div class="PublicFormPage__success" role="status" aria-live="polite">
         <FormHeader
           :primary-logo="formConfig.primaryLogo"
           :primary-logo-svg-to-white="formConfig.primaryLogoSvgToWhite"
@@ -20,7 +21,7 @@
           :title="formConfig.formTitle"
         />
         <div class="PublicFormPage__success-content">
-          <svg class="PublicFormPage__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="PublicFormPage__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-linecap="round" stroke-linejoin="round" />
             <polyline points="22 4 12 14.01 9 11.01" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -40,6 +41,7 @@
       />
 
       <FormPage
+        ref="formPageRef"
         :page-title="currentPageTitle"
         :show-title="store.currentPage?.showTitle !== false"
         :fields="store.currentPageFields"
@@ -49,10 +51,14 @@
         :is-first="store.isFirstPage"
         :is-last="store.isLastPage"
         :loading="store.submitting"
-        @prev="store.prevPage()"
-        @next="store.nextPage()"
+        @prev="handlePrev"
+        @next="handleNext"
         @submit="handleSubmit"
       />
+
+      <div class="sr-only" aria-live="polite" aria-atomic="true">
+        {{ pageAnnouncement }}
+      </div>
     </template>
   </main>
 </template>
@@ -72,6 +78,8 @@ const slug = computed(() => route.params.slug as string)
 
 const { data: formConfig, isLoading, error } = usePublicFormQuery(slug)
 const store = useFormSubmissionStore()
+const formPageRef = ref<InstanceType<typeof FormPage> | null>(null)
+const pageAnnouncement = ref('')
 
 const pageTitle = computed(() => formConfig.value?.formTitle || 'טופס')
 useHead({
@@ -90,8 +98,67 @@ const currentPageTitle = computed(() => {
   return page.title || ''
 })
 
+function focusPageTop() {
+  nextTick(() => {
+    const pageEl = formPageRef.value?.$el as HTMLElement | undefined
+    if (!pageEl) return
+    const heading = pageEl.querySelector('h2')
+    const firstInput = pageEl.querySelector('input, textarea, select, button, [tabindex]') as HTMLElement | null
+    if (heading) {
+      heading.setAttribute('tabindex', '-1')
+      heading.focus()
+    }
+    else if (firstInput) {
+      firstInput.focus()
+    }
+  })
+}
+
+function announcePageChange() {
+  pageAnnouncement.value = ''
+  nextTick(() => {
+    pageAnnouncement.value = `עמוד ${store.currentPageIndex + 1} מתוך ${store.totalPages}`
+  })
+}
+
+function scrollToFirstInvalidField() {
+  nextTick(() => {
+    const firstErrorKey = store.currentPageFields.find(f => store.errors[f.key])?.key
+    if (firstErrorKey) {
+      const fieldEl = document.querySelector(`[data-field-key="${firstErrorKey}"]`)
+      fieldEl?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      nextTick(() => {
+        const focusable = fieldEl?.querySelector('input, textarea, select, button, [tabindex]') as HTMLElement | null
+        focusable?.focus()
+      })
+    }
+  })
+}
+
+function handlePrev() {
+  store.prevPage()
+  announcePageChange()
+  focusPageTop()
+  nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+}
+
+function handleNext() {
+  const ok = store.nextPage()
+  if (!ok) {
+    scrollToFirstInvalidField()
+  }
+  else {
+    announcePageChange()
+    focusPageTop()
+    nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+  }
+}
+
 async function handleSubmit() {
-  if (!store.validateCurrentPage()) return
+  if (!store.validateCurrentPage()) {
+    scrollToFirstInvalidField()
+    return
+  }
   if (!formConfig.value) return
 
   store.submitting = true
@@ -222,7 +289,28 @@ onUnmounted(() => {
   font-size: 16px;
 }
 
-.PublicFormPage .FormField__radio-option {
+.PublicFormPage .FormField__radio-option,
+.PublicFormPage .FormField__checkbox-option {
   font-size: 22px;
+}
+
+@media (max-width: 768px) {
+  .PublicFormPage .FormField__label { font-size: 22px; }
+  .PublicFormPage .FormField__input,
+  .PublicFormPage .FormField__textarea,
+  .PublicFormPage .FormField__select-trigger { font-size: 18px; }
+  .PublicFormPage .FormField__radio-option,
+  .PublicFormPage .FormField__checkbox-option { font-size: 18px; }
+  .PublicFormPage .FormField__info,
+  .PublicFormPage .FormField__error { font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+  .PublicFormPage .FormField__label { font-size: 20px; }
+  .PublicFormPage .FormField__input,
+  .PublicFormPage .FormField__textarea,
+  .PublicFormPage .FormField__select-trigger { font-size: 16px; }
+  .PublicFormPage .FormField__radio-option,
+  .PublicFormPage .FormField__checkbox-option { font-size: 16px; }
 }
 </style>

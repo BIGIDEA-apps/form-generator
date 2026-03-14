@@ -113,9 +113,12 @@ const formUrl = computed(() => {
   return slug ? getFormUrl(slug) : null
 })
 
+const justSaved = ref(false)
+
 watch(formData, (data) => {
   if (data) {
-    store.loadExisting(data)
+    store.loadExisting(data, { preserveActivePage: justSaved.value })
+    if (justSaved.value) justSaved.value = false
   }
 }, { immediate: true })
 
@@ -129,6 +132,7 @@ async function handleSave() {
   try {
     const data = store.getExportData()
     await updateMutation.mutateAsync({ id: formId.value, data })
+    justSaved.value = true
     store.isDirty = false
     store.clearAllValidationErrors()
     toast.add({ title: 'הטופס נשמר בהצלחה', color: 'green' })

@@ -67,4 +67,16 @@ function isSvg(url: string | null): boolean {
   line-height: 1.4;
   margin: 0;
 }
+
+@media (max-width: 768px) {
+  .FormHeader__logo { height: 70px; }
+  .FormHeader__title { font-size: 32px; }
+}
+
+@media (max-width: 480px) {
+  .FormHeader { padding: 1.25rem 1rem 1rem; }
+  .FormHeader__logos { gap: 1rem; margin-bottom: 1rem; flex-wrap: nowrap; }
+  .FormHeader__logo { height: 50px; max-width: 10rem; }
+  .FormHeader__title { font-size: 26px; line-height: 1.3; }
+}
 </style>

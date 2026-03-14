@@ -1,4 +1,4 @@
-export type InputType = 'shortText' | 'longText' | 'select' | 'radio' | 'toggle' | 'checkbox' | 'richText' | 'display'
+export type InputType = 'shortText' | 'longText' | 'select' | 'radio' | 'booleanRadio' | 'toggle' | 'checkbox' | 'checkboxOther' | 'richText' | 'display'
 
 export type ValidationRule = 'email' | 'israeliPhone' | 'numbersOnly' | null
 
@@ -26,6 +26,7 @@ export interface FieldDefinition {
   fallbackValue?: string
   togglePositiveLabel?: string
   toggleNegativeLabel?: string
+  conditionalVisibility?: { dependsOn: string; showWhen: string }
 }
 
 export interface FieldConfig {
@@ -43,6 +44,7 @@ export interface FieldConfig {
   fallbackValue?: string
   togglePositiveLabel?: string
   toggleNegativeLabel?: string
+  conditionalVisibility?: { dependsOn: string; showWhen: string }
 }
 
 export interface FormPage {
@@ -51,6 +53,13 @@ export interface FormPage {
   titleFieldKey: string
   showTitle: boolean
   fields: string[]
+}
+
+export interface SpreadsheetInfo {
+  id: string
+  name: string
+  url: string
+  folderId?: string
 }
 
 export interface FormConfig {
@@ -67,6 +76,11 @@ export interface FormConfig {
   pages: FormPage[]
   fields: Record<string, FieldConfig>
   isActive: boolean
+  spreadsheet?: SpreadsheetInfo
+  campLandingPageUrl?: string
+  columnMappingMode?: 'default' | 'custom'
+  columnMapping?: Record<string, string>
+  sourceTemplateId?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -75,6 +89,8 @@ export interface FormSubmission {
   _id?: string
   formId: string
   formSlug: string
+  formName: string
+  company: string
   data: Record<string, any>
   submittedAt?: Date | string
 }

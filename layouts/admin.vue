@@ -2,10 +2,10 @@
   <div class="AdminLayout">
     <header class="AdminLayout__header">
       <div class="AdminLayout__header-inner">
-        <div class="AdminLayout__brand">
+        <NuxtLink to="/admin" class="AdminLayout__brand">
           <img src="/img/logos/bigidea-logo-admin.png" alt="BIGIDEA" class="AdminLayout__logo">
           <span class="AdminLayout__title">מחולל הטפסים של BIGIDEA</span>
-        </div>
+        </NuxtLink>
 
         <div v-if="user" class="AdminLayout__user">
           <UDropdown :items="userMenuItems">
@@ -72,6 +72,9 @@ const userMenuItems = computed(() => [
   display: flex;
   align-items: center;
   justify-content: space-between;
+  max-width: var(--admin-content-width);
+  margin: 0 auto;
+  width: 100%;
 }
 
 .AdminLayout__brand {
@@ -79,6 +82,13 @@ const userMenuItems = computed(() => [
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.AdminLayout__brand:hover {
+  opacity: 0.85;
 }
 
 .AdminLayout__logo {

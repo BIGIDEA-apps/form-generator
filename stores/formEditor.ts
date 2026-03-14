@@ -47,9 +47,11 @@ export const useFormEditorStore = defineStore('formEditor', {
       this.isNew = true
     },
 
-    loadExisting(formData: FormConfig) {
+    loadExisting(formData: FormConfig, options?: { preserveActivePage?: boolean }) {
       this.form = JSON.parse(JSON.stringify(formData))
-      this.activePageKey = this.form!.pages[0]?.key || 'page1'
+      if (!options?.preserveActivePage || !this.form!.pages.some(p => p.key === this.activePageKey)) {
+        this.activePageKey = this.form!.pages[0]?.key || 'page1'
+      }
       this.syncCompanyFieldsVisibility()
       this.isDirty = false
       this.isNew = false

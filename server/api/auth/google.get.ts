@@ -2,9 +2,15 @@ import { consola } from 'consola'
 
 export default defineOAuthGoogleEventHandler({
   config: {
-    scope: ['email', 'profile'],
+    scope: [
+      'email',
+      'profile',
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/spreadsheets',
+    ],
+    authorizationParams: { access_type: 'offline', prompt: 'consent' },
   },
-  async onSuccess(event, { user }) {
+  async onSuccess(event, { user, tokens }) {
     const email: string = user.email || ''
     const allowedDomain = 'bigideas.co.il'
 
@@ -19,6 +25,10 @@ export default defineOAuthGoogleEventHandler({
         email: user.email,
         name: user.name,
         picture: user.picture,
+      },
+      secure: {
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
       },
     })
 

@@ -78,6 +78,12 @@
           model-value=""
         />
 
+        <BooleanRadioField
+          v-else-if="field.inputType === 'booleanRadio'"
+          :field="field"
+          model-value=""
+        />
+
         <ToggleField
           v-else-if="field.inputType === 'toggle'"
           :field="field"
@@ -88,6 +94,12 @@
           v-else-if="field.inputType === 'checkbox'"
           :field="field"
           :model-value="false"
+        />
+
+        <CheckboxOtherField
+          v-else-if="field.inputType === 'checkboxOther'"
+          :field="field"
+          :model-value="{ selected: [], otherText: '' }"
         />
       </div>
     </div>
@@ -108,8 +120,10 @@ import ShortTextField from '~/components/form/fields/ShortTextField.vue'
 import LongTextField from '~/components/form/fields/LongTextField.vue'
 import SelectField from '~/components/form/fields/SelectField.vue'
 import RadioField from '~/components/form/fields/RadioField.vue'
+import BooleanRadioField from '~/components/form/fields/BooleanRadioField.vue'
 import ToggleField from '~/components/form/fields/ToggleField.vue'
 import CheckboxField from '~/components/form/fields/CheckboxField.vue'
+import CheckboxOtherField from '~/components/form/fields/CheckboxOtherField.vue'
 
 const props = defineProps<{
   field: FieldConfig
@@ -125,7 +139,7 @@ const isHeaderOnly = computed(() => {
   return !isFallbackField || !hasFallbackValue
 })
 
-const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
+const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'camperDetailsMainText', 'camperDetailsAppendixText', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
 
 function isRichTextDisplayField(key: string) {
   return RICH_TEXT_DISPLAY_FIELDS.includes(key)
@@ -269,7 +283,8 @@ const emit = defineEmits<{
   font-size: 16px;
 }
 
-.FieldPreviewCard__preview .FormField__radio-option {
+.FieldPreviewCard__preview .FormField__radio-option,
+.FieldPreviewCard__preview .FormField__checkbox-option {
   font-size: 22px;
 }
 

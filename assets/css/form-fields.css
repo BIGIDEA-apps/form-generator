@@ -1,3 +1,17 @@
+/* ─── Visually hidden (screen-reader only) ─── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ─── Shared form field styles (public form + admin preview) ─── */
 
 .FormField {
@@ -38,6 +52,12 @@
   border-color: var(--color-brand-primary);
 }
 
+.FormField__input:focus-visible,
+.FormField__textarea:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
 .FormField__input--error,
 .FormField__textarea--error {
   border-color: #ef4444;
@@ -76,10 +96,19 @@
   gap: 0.5rem;
   cursor: pointer;
   color: var(--color-brand-white);
+  position: relative;
 }
 
 .FormField__radio-input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .FormField__radio-custom {
@@ -156,4 +185,105 @@
 
 .FormField__toggle--active .FormField__toggle-thumb {
   transform: translateX(-1.5rem);
+}
+
+/* ─── Checkbox field styles (match radio: same size, border, colors) ─── */
+
+.FormField__checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--color-brand-white);
+  position: relative;
+}
+
+.FormField__checkbox-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.FormField__checkbox-custom {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0.25rem;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.FormField__checkbox-input:checked + .FormField__checkbox-custom {
+  border-color: var(--color-brand-primary);
+}
+
+.FormField__checkbox-input:checked + .FormField__checkbox-custom::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.35rem;
+  height: 0.65rem;
+  border: solid var(--color-brand-primary);
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -60%) rotate(45deg);
+}
+
+.FormField__checkbox-label {
+  flex: 1;
+}
+
+/* ─── Focus-visible styles for keyboard navigation ─── */
+
+.FormField__radio-input:focus-visible + .FormField__radio-custom {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+.FormField__checkbox-input:focus-visible + .FormField__checkbox-custom {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+.FormField__toggle:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+.FormField__select-trigger:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+.FormField__select-option:focus-visible,
+.FormField__select-option--highlighted {
+  outline: none;
+  background: var(--color-brand-select-hover);
+}
+
+.FormNavigation__btn:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Mobile responsive tweaks ─── */
+
+@media (max-width: 480px) {
+  .FormField__input,
+  .FormField__textarea {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .FormField__select-trigger {
+    padding: 0.6rem 0.75rem;
+    padding-left: 2rem;
+  }
 }

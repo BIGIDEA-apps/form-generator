@@ -14,6 +14,16 @@ export interface IForm extends Document {
   pages: FormPage[]
   fields: Record<string, FieldConfig>
   isActive: boolean
+  spreadsheet?: {
+    id: string
+    name: string
+    url: string
+    folderId?: string
+  }
+  campLandingPageUrl?: string
+  columnMappingMode: 'default' | 'custom'
+  columnMapping: Record<string, string>
+  sourceTemplateId: string
   createdAt: Date
   updatedAt: Date
 }
@@ -42,6 +52,13 @@ const FieldConfigSchema = new Schema(
     fallbackValue: { type: String, default: '' },
     togglePositiveLabel: { type: String, default: '' },
     toggleNegativeLabel: { type: String, default: '' },
+    conditionalVisibility: {
+      type: new Schema({
+        dependsOn: { type: String, required: true },
+        showWhen: { type: String, required: true },
+      }, { _id: false }),
+      default: undefined,
+    },
   },
   { _id: false },
 )
@@ -63,7 +80,7 @@ const FormSchema = new Schema<IForm>(
     formName: { type: String, required: true },
     formTitle: { type: String, default: '' },
     company: { type: String, default: '' },
-    primaryLogo: { type: String, default: '/img/logos/bigidea-logo.png' },
+    primaryLogo: { type: String, default: '/img/logos/bigidea-logo.svg' },
     primaryLogoSvgToWhite: { type: Boolean, default: false },
     secondaryLogo: { type: String, default: null },
     secondaryLogoSvgToWhite: { type: Boolean, default: false },
@@ -71,9 +88,24 @@ const FormSchema = new Schema<IForm>(
     pages: { type: [FormPageSchema], default: [] },
     fields: { type: Schema.Types.Mixed, default: {} },
     isActive: { type: Boolean, default: true },
+    spreadsheet: {
+      type: new Schema({
+        id: { type: String, default: '' },
+        name: { type: String, default: '' },
+        url: { type: String, default: '' },
+        folderId: { type: String, default: '' },
+      }, { _id: false }),
+      default: undefined,
+    },
+    campLandingPageUrl: { type: String, default: '' },
+    columnMappingMode: { type: String, enum: ['default', 'custom'], default: 'default' },
+    columnMapping: { type: Schema.Types.Mixed, default: {} },
+    sourceTemplateId: { type: String, default: '' },
   },
   { timestamps: true },
 )
+
+FormSchema.index({ slug: 1, isActive: 1 })
 
 export const FormModel = mongoose.models.Form as mongoose.Model<IForm>
   || mongoose.model<IForm>('Form', FormSchema)

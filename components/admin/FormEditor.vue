@@ -43,6 +43,67 @@
 
       <hr class="FormEditor__divider" />
 
+      <div class="FormEditor__subsection FormEditor__spreadsheet-settings">
+        <h3 class="FormEditor__subsection-title">יעד שליחת הנתונים</h3>
+        <AdminSpreadsheetPicker />
+
+        <div v-if="store.form?.spreadsheet?.id" class="FormEditor__mapping-section">
+          <div class="FormEditor__mapping-header">
+            <span class="FormEditor__mapping-label">התאמת שדות לעמודות:</span>
+            <UBadge
+              :color="isCustomMapping ? 'blue' : 'green'"
+              variant="subtle"
+              :label="isCustomMapping ? 'מותאם אישית' : 'ברירת מחדל'"
+            />
+          </div>
+          <div class="FormEditor__mapping-actions">
+            <template v-if="isCustomMapping">
+              <UButton
+                label="ערוך התאמה"
+                icon="i-heroicons-pencil-square"
+                variant="outline"
+                color="gray"
+                size="sm"
+                @click="openFormMappingModal"
+              />
+              <UTooltip
+                :text="canSwitchToDefault ? '' : 'לא ניתן לחזור לברירת מחדל כי הטופס נוצר מתבנית אחרת'"
+                :disabled="canSwitchToDefault"
+              >
+                <UButton
+                  label="חזור לברירת מחדל"
+                  icon="i-heroicons-arrow-uturn-right"
+                  variant="outline"
+                  color="gray"
+                  size="sm"
+                  :disabled="!canSwitchToDefault"
+                  @click="switchToDefault"
+                />
+              </UTooltip>
+            </template>
+            <template v-else>
+              <UButton
+                label="עבור להתאמה מותאמת אישית"
+                icon="i-heroicons-arrows-right-left"
+                variant="outline"
+                color="gray"
+                size="sm"
+                @click="openFormMappingModal"
+              />
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <AdminColumnMappingModal
+        v-model="showFormMappingModal"
+        :spreadsheet-id="store.form?.spreadsheet?.id ?? ''"
+        :initial-mapping="formMappingInitial"
+        @save="handleFormMappingSave"
+      />
+
+      <hr class="FormEditor__divider" />
+
       <div class="FormEditor__subsection FormEditor__form-header">
         <h3 class="FormEditor__subsection-title">כותרת הטופס</h3>
         <div class="FormEditor__form-header-fields">
@@ -63,7 +124,7 @@
             label="לוגו ראשי"
             :is-required="true"
             :svg-to-white="store.form?.primaryLogoSvgToWhite ?? false"
-            @update:model-value="store.updateFormField('primaryLogo', $event || '/img/logos/bigidea-logo.png')"
+            @update:model-value="store.updateFormField('primaryLogo', $event || '/img/logos/bigidea-logo.svg')"
             @update:svg-to-white="store.updateFormField('primaryLogoSvgToWhite', $event)"
           />
           <AdminLogoUploader
@@ -135,9 +196,41 @@
 <script setup lang="ts">
 import type { FieldConfig, FormPage } from '~/types/form'
 import { useFormEditorStore } from '~/stores/formEditor'
+import { useAppSettingsQuery } from '~/composables/useAppSettings'
 
 const store = useFormEditorStore()
 const { formBaseUrl } = useFormBaseUrl()
+const { data: appSettings } = useAppSettingsQuery()
+
+const showFormMappingModal = ref(false)
+
+const isCustomMapping = computed(() => store.form?.columnMappingMode === 'custom')
+
+const canSwitchToDefault = computed(() => {
+  if (!store.form?.sourceTemplateId || !appSettings.value?.spreadsheetTemplateId) return false
+  return store.form.sourceTemplateId === appSettings.value.spreadsheetTemplateId
+})
+
+const formMappingInitial = computed(() => {
+  if (isCustomMapping.value && store.form?.columnMapping) {
+    return store.form.columnMapping
+  }
+  return appSettings.value?.columnMapping ?? {}
+})
+
+function openFormMappingModal() {
+  showFormMappingModal.value = true
+}
+
+function handleFormMappingSave(mapping: Record<string, string>) {
+  store.updateFormField('columnMappingMode', 'custom')
+  store.updateFormField('columnMapping', mapping)
+}
+
+function switchToDefault() {
+  store.updateFormField('columnMappingMode', 'default')
+  store.updateFormField('columnMapping', {})
+}
 
 const slugPrefix = computed(() => (formBaseUrl ? `${formBaseUrl}/forms/` : '/forms/'))
 
@@ -247,7 +340,8 @@ function getPageFields(pageKey: string): FieldConfig[] {
 }
 
 .FormEditor__form-settings,
-.FormEditor__form-header {
+.FormEditor__form-header,
+.FormEditor__spreadsheet-settings {
   max-width: 28rem;
 }
 
@@ -319,5 +413,31 @@ function getPageFields(pageKey: string): FieldConfig[] {
   justify-content: flex-end;
   padding-top: 1rem;
   border-top: 1px solid var(--ui-border);
+}
+
+.FormEditor__mapping-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ui-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.FormEditor__mapping-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.FormEditor__mapping-label {
+  font-size: 0.875rem;
+  color: var(--ui-text-muted);
+}
+
+.FormEditor__mapping-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 </style>

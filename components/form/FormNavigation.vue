@@ -1,12 +1,12 @@
 <template>
-  <nav class="FormNavigation">
+  <nav class="FormNavigation" :class="{ 'FormNavigation--centered': isFirst }" aria-label="ניווט טופס">
     <button
       v-if="!isFirst"
       type="button"
       class="FormNavigation__btn FormNavigation__btn--secondary"
       @click="$emit('prev')"
     >
-      לדף הקודם
+      לעמוד הקודם
     </button>
     <div v-else />
 
@@ -15,10 +15,12 @@
       type="button"
       class="FormNavigation__btn FormNavigation__btn--primary"
       :disabled="loading"
+      :aria-busy="loading || undefined"
       @click="$emit('submit')"
     >
-      <span v-if="loading" class="FormNavigation__spinner" />
-      <span v-else>שליחת הטופס</span>
+      <span v-if="loading" class="FormNavigation__spinner" aria-hidden="true" />
+      <span v-if="loading" class="sr-only">שולח...</span>
+      <span v-else>להרשמה</span>
     </button>
 
     <button
@@ -27,7 +29,7 @@
       class="FormNavigation__btn FormNavigation__btn--primary"
       @click="$emit('next')"
     >
-      המשך
+      לעמוד הבא
     </button>
   </nav>
 </template>
@@ -55,6 +57,10 @@ defineEmits<{
   max-width: 48rem;
   margin: 0 auto;
   gap: 1rem;
+}
+
+.FormNavigation--centered {
+  justify-content: center;
 }
 
 .FormNavigation__btn {
@@ -106,4 +112,8 @@ defineEmits<{
   animation: spin 0.6s linear infinite;
 }
 
+@media (max-width: 480px) {
+  .FormNavigation { padding: 1rem; }
+  .FormNavigation__btn { min-width: 6rem; padding: 0.65rem 1.25rem; font-size: 0.9rem; }
+}
 </style>

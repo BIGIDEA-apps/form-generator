@@ -1,27 +1,33 @@
 <template>
-  <div class="FormField">
-    <label class="FormField__label">
+  <div class="FormField" :data-field-key="field.key">
+    <label :for="`field-${field.key}`" class="FormField__label">
       {{ field.presentationLabel }}
-      <span v-if="field.required" class="FormField__required">*</span>
+      <span v-if="field.required" class="FormField__required" aria-hidden="true">*</span>
+      <span v-if="field.required" class="sr-only">שדה חובה</span>
     </label>
     <input
+      :id="`field-${field.key}`"
       type="text"
       class="FormField__input"
       :class="{ 'FormField__input--error': error }"
       :value="modelValue"
       :placeholder="field.placeholder"
+      :aria-required="field.required || undefined"
+      :aria-invalid="error ? true : undefined"
+      :aria-describedby="ariaDescribedby || undefined"
       dir="rtl"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+      @blur="$emit('blur')"
     >
-    <p v-if="field.infoText" class="FormField__info">{{ field.infoText }}</p>
-    <p v-if="error" class="FormField__error">{{ error }}</p>
+    <p v-if="field.infoText" :id="`field-${field.key}-info`" class="FormField__info">{{ field.infoText }}</p>
+    <p v-if="error" :id="`field-${field.key}-error`" role="alert" class="FormField__error">{{ error }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { FieldConfig } from '~/types/form'
 
-defineProps<{
+const props = defineProps<{
   field: FieldConfig
   modelValue: string
   error?: string
@@ -29,5 +35,13 @@ defineProps<{
 
 defineEmits<{
   'update:modelValue': [value: string]
+  blur: []
 }>()
+
+const ariaDescribedby = computed(() => {
+  const ids: string[] = []
+  if (props.field.infoText) ids.push(`field-${props.field.key}-info`)
+  if (props.error) ids.push(`field-${props.field.key}-error`)
+  return ids.join(' ')
+})
 </script>
