@@ -211,6 +211,10 @@ function handleCopyLink() {
   font-size: 1.5rem;
   font-weight: 700;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .AdminFormEditPage__active-toggle {

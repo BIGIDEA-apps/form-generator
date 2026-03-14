@@ -52,6 +52,14 @@
           :error="store.errors[field.key]"
           @update:model-value="store.setValue(field.key, $event)"
         />
+
+        <CheckboxField
+          v-else-if="field.inputType === 'checkbox'"
+          :field="field"
+          :model-value="!!store.values[field.key]"
+          :error="store.errors[field.key]"
+          @update:model-value="store.setValue(field.key, $event)"
+        />
       </template>
     </div>
   </section>
@@ -65,6 +73,7 @@ import LongTextField from '~/components/form/fields/LongTextField.vue'
 import SelectField from '~/components/form/fields/SelectField.vue'
 import RadioField from '~/components/form/fields/RadioField.vue'
 import ToggleField from '~/components/form/fields/ToggleField.vue'
+import CheckboxField from '~/components/form/fields/CheckboxField.vue'
 
 defineProps<{
   pageTitle: string

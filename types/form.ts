@@ -1,4 +1,4 @@
-export type InputType = 'shortText' | 'longText' | 'select' | 'radio' | 'toggle' | 'richText' | 'display'
+export type InputType = 'shortText' | 'longText' | 'select' | 'radio' | 'toggle' | 'checkbox' | 'richText' | 'display'
 
 export type ValidationRule = 'email' | 'israeliPhone' | 'numbersOnly' | null
 
@@ -24,6 +24,8 @@ export interface FieldDefinition {
   /** Fields that must be mutually exclusive with this one (only one visible at a time) */
   exclusiveWith?: string[]
   fallbackValue?: string
+  togglePositiveLabel?: string
+  toggleNegativeLabel?: string
 }
 
 export interface FieldConfig {
@@ -39,6 +41,8 @@ export interface FieldConfig {
   validation: ValidationRule
   options: FieldOption[]
   fallbackValue?: string
+  togglePositiveLabel?: string
+  toggleNegativeLabel?: string
 }
 
 export interface FormPage {

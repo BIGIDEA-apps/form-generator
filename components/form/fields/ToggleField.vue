@@ -4,18 +4,22 @@
       {{ field.presentationLabel }}
       <span v-if="field.required" class="FormField__required">*</span>
     </label>
-    <button
-      type="button"
-      class="FormField__toggle"
-      :class="{ 'FormField__toggle--active': modelValue }"
-      role="switch"
-      :aria-checked="!!modelValue"
-      @click="$emit('update:modelValue', !modelValue)"
-    >
-      <span class="FormField__toggle-track">
-        <span class="FormField__toggle-thumb" />
-      </span>
-    </button>
+    <div class="FormField__toggle-row" dir="rtl">
+      <span class="FormField__toggle-label">{{ field.toggleNegativeLabel || '' }}</span>
+      <button
+        type="button"
+        class="FormField__toggle"
+        :class="{ 'FormField__toggle--active': modelValue }"
+        role="switch"
+        :aria-checked="!!modelValue"
+        @click="$emit('update:modelValue', !modelValue)"
+      >
+        <span class="FormField__toggle-track">
+          <span class="FormField__toggle-thumb" />
+        </span>
+      </button>
+      <span class="FormField__toggle-label">{{ field.togglePositiveLabel || '' }}</span>
+    </div>
     <p v-if="field.infoText" class="FormField__info">{{ field.infoText }}</p>
     <p v-if="error" class="FormField__error">{{ error }}</p>
   </div>

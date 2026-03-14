@@ -110,6 +110,18 @@
 
 /* ─── Toggle field styles ─── */
 
+.FormField__toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.FormField__toggle-label {
+  font-size: 1rem;
+  color: var(--color-brand-white);
+  min-width: 0;
+}
+
 .FormField__toggle {
   background: none;
   border: none;

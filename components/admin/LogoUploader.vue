@@ -20,7 +20,12 @@
         <div class="LogoUploader__spinner" />
       </template>
       <template v-else>
-        <img :src="modelValue" :alt="label" class="LogoUploader__image">
+        <img
+          :src="modelValue"
+          :alt="label"
+          class="LogoUploader__image"
+          :class="{ 'LogoUploader__image--white': (svgToWhite ?? false) && isSvg }"
+        >
         <div v-if="showActions" class="LogoUploader__actions">
         <UButton
           icon="i-heroicons-arrow-path"
@@ -64,19 +69,19 @@
 
     <div
       class="LogoUploader__svg-toggle"
-      :class="{ 'LogoUploader__svg-toggle--disabled': !isSvg && modelValue }"
+      :class="{ 'LogoUploader__svg-toggle--disabled': isSvgToggleDisabled }"
     >
-      <UTooltip v-if="!isSvg && modelValue">
+      <UTooltip v-if="isSvgToggleDisabled">
         <template #text>
           <span class="LogoUploader__tooltip-content">
             <UIcon name="i-heroicons-exclamation-triangle" class="LogoUploader__tooltip-icon" />
-            הלוגו אינו SVG
+            {{ svgToggleDisabledReason }}
           </span>
         </template>
         <div class="LogoUploader__svg-toggle-inner">
           <UToggle
             :model-value="svgToWhite ?? false"
-            :disabled="true"
+            :disabled="isSvgToggleDisabled"
             @update:model-value="emit('update:svgToWhite', $event)"
           />
           <span class="LogoUploader__svg-toggle-label">המר SVG לצבע לבן</span>
@@ -143,6 +148,9 @@ async function uploadFile(file: File) {
     })
 
     emit('update:modelValue', result.url)
+    if ((props.svgToWhite ?? false) && !result.url.toLowerCase().includes('.svg')) {
+      emit('update:svgToWhite', false)
+    }
   }
   catch (err: any) {
     error.value = err?.data?.statusMessage || 'העלאה נכשלה'
@@ -175,6 +183,12 @@ function handleDrop(event: DragEvent) {
 }
 
 const isSvg = computed(() => !!props.modelValue?.toLowerCase().includes('.svg'))
+
+const isSvgToggleDisabled = computed(() => !props.modelValue || !isSvg.value)
+
+const svgToggleDisabledReason = computed(() =>
+  !props.modelValue ? 'העלו לוגו קודם' : 'הלוגו אינו SVG',
+)
 </script>
 
 <style>
@@ -219,6 +233,10 @@ const isSvg = computed(() => !!props.modelValue?.toLowerCase().includes('.svg'))
   max-height: 100%;
   object-fit: contain;
   object-position: center;
+}
+
+.LogoUploader__image--white {
+  filter: brightness(0) invert(1);
 }
 
 .LogoUploader__actions {

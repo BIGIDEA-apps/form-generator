@@ -97,6 +97,27 @@
             />
           </div>
 
+          <div v-if="field.inputType === 'toggle'" class="FieldSettingsSidebar__toggle-labels">
+            <UFormGroup label="תווית לחיובי">
+              <UInput
+                :model-value="field.togglePositiveLabel || ''"
+                dir="rtl"
+                size="lg"
+                placeholder="מעוניין/ת"
+                @update:model-value="store.updateFieldConfig(field.key, { togglePositiveLabel: String($event) })"
+              />
+            </UFormGroup>
+            <UFormGroup label="תווית לשלילי">
+              <UInput
+                :model-value="field.toggleNegativeLabel || ''"
+                dir="rtl"
+                size="lg"
+                placeholder="לא מעוניין/ת"
+                @update:model-value="store.updateFieldConfig(field.key, { toggleNegativeLabel: String($event) })"
+              />
+            </UFormGroup>
+          </div>
+
           <div v-if="isFallbackField" class="FieldSettingsSidebar__default-session">
             <div
               class="FieldSettingsSidebar__default-session-toggle"
@@ -240,11 +261,15 @@ function toggleFallbackValue(on: boolean) {
   justify-content: space-between;
   padding: 0.5rem 0;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .FieldSettingsSidebar__title {
   font-size: 1rem;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .FieldSettingsSidebar__body {
@@ -303,6 +328,12 @@ function toggleFallbackValue(on: boolean) {
 .FieldSettingsSidebar__option-row > *:nth-child(2) {
   flex: 1;
   min-width: 0;
+}
+
+.FieldSettingsSidebar__toggle-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .FieldSettingsSidebar__default-session {

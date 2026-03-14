@@ -25,3 +25,5 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Form editor: active tab light blue - applied via UTabs :ui prop (list.marker.background, list.tab.active) */

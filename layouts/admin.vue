@@ -10,7 +10,7 @@
         <div v-if="user" class="AdminLayout__user">
           <UDropdown :items="userMenuItems">
             <UButton variant="ghost" color="gray" size="sm" class="AdminLayout__user-trigger">
-              <span>{{ user.name }}</span>
+              <span class="AdminLayout__user-name">{{ user.name }}</span>
               <UAvatar
                 v-if="user.picture"
                 :src="user.picture"
@@ -78,6 +78,7 @@ const userMenuItems = computed(() => [
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .AdminLayout__logo {
@@ -89,6 +90,9 @@ const userMenuItems = computed(() => [
 .AdminLayout__title {
   font-size: 1.1rem;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .AdminLayout__user {
@@ -100,6 +104,15 @@ const userMenuItems = computed(() => [
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
+  max-width: 12rem;
+}
+
+.AdminLayout__user-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .AdminLayout__user-placeholder {

@@ -18,6 +18,8 @@ const FieldConfigSchema = z.object({
   validation: z.union([z.literal('email'), z.literal('israeliPhone'), z.literal('numbersOnly'), z.null()]).default(null),
   options: z.array(FieldOptionSchema).default([]),
   fallbackValue: z.string().default(''),
+  togglePositiveLabel: z.string().default(''),
+  toggleNegativeLabel: z.string().default(''),
 })
 
 const FormPageSchema = z.object({

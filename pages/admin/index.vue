@@ -188,6 +188,9 @@ function handleCopyLink(form: FormConfig) {
 .AdminFormsPage__delete-modal-text {
   color: var(--ui-text-muted);
   font-size: 0.9375rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .AdminFormsPage__delete-modal-actions {

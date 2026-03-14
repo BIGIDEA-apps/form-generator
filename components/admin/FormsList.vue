@@ -1,6 +1,14 @@
 <template>
   <section class="FormsList">
     <UTable :rows="forms" :columns="columns">
+      <template #formName-data="{ row }">
+        <span class="FormsList__cell-truncate">{{ row.formName || '-' }}</span>
+      </template>
+
+      <template #company-data="{ row }">
+        <span class="FormsList__cell-truncate">{{ row.company || '-' }}</span>
+      </template>
+
       <template #status-data="{ row }">
         <UBadge
           :color="row.isActive ? 'green' : 'gray'"
@@ -93,5 +101,13 @@ function formatDate(date: string | Date | undefined): string {
 .FormsList__actions {
   display: flex;
   gap: 0.25rem;
+}
+
+.FormsList__cell-truncate {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

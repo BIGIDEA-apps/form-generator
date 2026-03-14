@@ -53,7 +53,11 @@ export const useFormSubmissionStore = defineStore('formSubmission', {
       const vals: Record<string, any> = {}
       for (const [key, field] of Object.entries(config.fields)) {
         if (field.visible) {
-          vals[key] = field.defaultValue || ''
+          if (field.inputType === 'toggle' || field.inputType === 'checkbox') {
+            vals[key] = field.defaultValue === 'true' || field.defaultValue === '1'
+          } else {
+            vals[key] = field.defaultValue || ''
+          }
         }
       }
       this.values = vals

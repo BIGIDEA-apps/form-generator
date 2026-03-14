@@ -40,6 +40,8 @@ const FieldConfigSchema = new Schema(
     validation: { type: String, default: null },
     options: { type: [FieldOptionSchema], default: [] },
     fallbackValue: { type: String, default: '' },
+    togglePositiveLabel: { type: String, default: '' },
+    toggleNegativeLabel: { type: String, default: '' },
   },
   { _id: false },
 )

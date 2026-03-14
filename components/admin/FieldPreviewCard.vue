@@ -1,11 +1,18 @@
 <template>
-  <div class="FieldPreviewCard" :class="{ 'FieldPreviewCard--disabled': isDisabledByMainCompany }">
+  <div
+    class="FieldPreviewCard"
+    :class="{
+      'FieldPreviewCard--disabled': isDisabledByMainCompany,
+      'FieldPreviewCard--header-only': isHeaderOnly,
+    }"
+  >
     <div class="FieldPreviewCard__content">
       <div class="FieldPreviewCard__toolbar">
       <div class="FieldPreviewCard__toolbar-right" dir="rtl">
         <UToggle
           :model-value="field.visible"
           size="sm"
+          :disabled="isDisabledByMainCompany"
           @update:model-value="emit('update', field.key, { visible: $event })"
         />
         <span class="FieldPreviewCard__field-label">{{ field.label }}</span>
@@ -17,6 +24,7 @@
           <UToggle
             :model-value="field.required"
             size="sm"
+            :disabled="isDisabledByMainCompany"
             @update:model-value="emit('update', field.key, { required: $event })"
           />
         </div>
@@ -31,6 +39,7 @@
       </div>
     </div>
 
+    <div class="FieldPreviewCard__body" :class="{ 'FieldPreviewCard__body--collapsed': isHeaderOnly }">
     <div v-if="field.visible" class="FieldPreviewCard__preview">
       <div class="FieldPreviewCard__preview-inner">
         <template v-if="field.inputType === 'display'">
@@ -74,10 +83,17 @@
           :field="field"
           :model-value="false"
         />
+
+        <CheckboxField
+          v-else-if="field.inputType === 'checkbox'"
+          :field="field"
+          :model-value="false"
+        />
       </div>
     </div>
     <div v-if="(field.key === 'campSession' || field.key === 'campRound') && !field.visible && field.fallbackValue" class="FieldPreviewCard__fallback-info" dir="rtl">
       {{ field.key === 'campRound' ? 'סבב דיפולטיבי' : 'מחזור דיפולטיבי' }}: {{ field.fallbackValue }}
+    </div>
     </div>
     </div>
     <UTooltip v-if="isDisabledByMainCompany" text="The company name has already been selected in the main form settings.">
@@ -93,11 +109,21 @@ import LongTextField from '~/components/form/fields/LongTextField.vue'
 import SelectField from '~/components/form/fields/SelectField.vue'
 import RadioField from '~/components/form/fields/RadioField.vue'
 import ToggleField from '~/components/form/fields/ToggleField.vue'
+import CheckboxField from '~/components/form/fields/CheckboxField.vue'
 
-defineProps<{
+const props = defineProps<{
   field: FieldConfig
   isDisabledByMainCompany?: boolean
 }>()
+
+const FALLBACK_FIELD_KEYS = ['campSession', 'campRound'] as const
+
+const isHeaderOnly = computed(() => {
+  if (props.field.visible) return false
+  const isFallbackField = FALLBACK_FIELD_KEYS.includes(props.field.key as (typeof FALLBACK_FIELD_KEYS)[number])
+  const hasFallbackValue = Boolean(props.field.fallbackValue?.trim())
+  return !isFallbackField || !hasFallbackValue
+})
 
 const RICH_TEXT_DISPLAY_FIELDS = ['mainDescription', 'page2MainText', 'page3MainText', 'page2AppendixText', 'page3AppendixText']
 
@@ -148,15 +174,40 @@ const emit = defineEmits<{
   border-bottom: 1px solid var(--ui-border);
 }
 
+.FieldPreviewCard--header-only {
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+}
+
+.FieldPreviewCard--header-only .FieldPreviewCard__content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.FieldPreviewCard--header-only .FieldPreviewCard__toolbar {
+  flex-shrink: 0;
+  border-bottom: none;
+}
+
+.FieldPreviewCard--header-only .FieldPreviewCard__body {
+  display: none;
+}
+
 .FieldPreviewCard__toolbar-right {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .FieldPreviewCard__field-label {
   font-size: 0.875rem;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .FieldPreviewCard__toolbar-left {

@@ -79,19 +79,53 @@
 
     <hr class="FormEditor__divider" />
 
-    <section class="FormEditor__subsection FormEditor__pages">
+    <section ref="pagesSectionRef" class="FormEditor__subsection FormEditor__pages">
       <h3 class="FormEditor__section-title">עמודי הטופס</h3>
 
-      <UTabs :items="pageTabs" @change="handleTabChange">
+      <UTabs
+        :model-value="currentPageIndex"
+        :items="pageTabs"
+        value-key="value"
+        color="primary"
+        class="FormEditor__tabs"
+        :ui="{
+          list: {
+            marker: { background: '!bg-[#00CDFF]' },
+            tab: { active: '!text-white' },
+          },
+        }"
+        @update:model-value="handleTabChangeByIndex"
+      >
         <template #item="{ item }">
-          <AdminPageConfigurator
-            v-if="getPage(item.key)"
-            :page="getPage(item.key)!"
-            :fields="getPageFields(item.key)"
-            @update-page-title="store.updatePageTitle"
-            @update-page-show-title="store.updatePageShowTitle"
-            @update-field="store.updateFieldConfig"
-          />
+          <div class="FormEditor__page-wrapper">
+            <AdminPageConfigurator
+              v-if="getPage(item.key)"
+              :page="getPageSafe(item.key)"
+              :fields="getPageFields(item.key)"
+              @update-page-title="store.updatePageTitle"
+              @update-page-show-title="store.updatePageShowTitle"
+              @update-field="store.updateFieldConfig"
+            />
+            <div class="FormEditor__page-nav">
+              <UButton
+                label="עמוד קודם"
+                icon="i-heroicons-arrow-right"
+                variant="outline"
+                color="gray"
+                :disabled="isFirstPage"
+                @click="goToPrevPage"
+              />
+              <UButton
+                label="עמוד הבא"
+                icon="i-heroicons-arrow-left"
+                icon-position="right"
+                variant="outline"
+                color="gray"
+                :disabled="isLastPage"
+                @click="goToNextPage"
+              />
+            </div>
+          </div>
         </template>
       </UTabs>
     </section>
@@ -108,21 +142,67 @@ const { formBaseUrl } = useFormBaseUrl()
 const slugPrefix = computed(() => (formBaseUrl ? `${formBaseUrl}/forms/` : '/forms/'))
 
 const pageTabs = computed(() =>
-  (store.form?.pages || []).map((page, idx) => ({
+  (store.form?.pages || []).map((page: FormPage, idx: number) => ({
     label: page.title || `עמוד ${idx + 1}`,
     key: page.key,
+    value: idx,
   })),
 )
 
-function handleTabChange(index: number) {
+const currentPageIndex = computed(() => {
   const pages = store.form?.pages || []
-  if (pages[index]) {
-    store.setActivePage(pages[index].key)
+  const idx = pages.findIndex((p: FormPage) => p.key === store.activePageKey)
+  return idx >= 0 ? idx : 0
+})
+
+const isFirstPage = computed(() => currentPageIndex.value <= 0)
+
+const isLastPage = computed(() => {
+  const pages = store.form?.pages || []
+  return pages.length <= 0 || currentPageIndex.value >= pages.length - 1
+})
+
+const pagesSectionRef = ref<HTMLElement | null>(null)
+
+function scrollToPagesNav() {
+  pagesSectionRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function handleTabChangeByIndex(index: string | number) {
+  const idx = typeof index === 'string' ? parseInt(index, 10) : index
+  const pages = store.form?.pages || []
+  const page = pages[idx]
+  if (page) store.setActivePage(page.key)
+}
+
+function goToPrevPage() {
+  if (isFirstPage.value) return
+  const pages = store.form?.pages || []
+  const idx = currentPageIndex.value - 1
+  if (pages[idx]) {
+    store.setActivePage(pages[idx].key)
+    nextTick(() => scrollToPagesNav())
+  }
+}
+
+function goToNextPage() {
+  if (isLastPage.value) return
+  const pages = store.form?.pages || []
+  const idx = currentPageIndex.value + 1
+  if (pages[idx]) {
+    store.setActivePage(pages[idx].key)
+    nextTick(() => scrollToPagesNav())
   }
 }
 
 function getPage(pageKey: string): FormPage | undefined {
-  return store.form?.pages.find(p => p.key === pageKey)
+  return store.form?.pages.find((p: FormPage) => p.key === pageKey)
+}
+
+function getPageSafe(pageKey: string): FormPage {
+  const page = getPage(pageKey)
+  if (!page) throw new Error(`Page ${pageKey} not found`)
+  return page
 }
 
 function getPageFields(pageKey: string): FieldConfig[] {
@@ -225,5 +305,19 @@ function getPageFields(pageKey: string): FieldConfig[] {
   color: var(--ui-text-muted);
   margin: 0.25rem 0 0;
   line-height: 1.4;
+}
+
+.FormEditor__page-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.FormEditor__page-nav {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ui-border);
 }
 </style>

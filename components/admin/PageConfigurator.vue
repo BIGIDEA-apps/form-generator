@@ -3,20 +3,23 @@
     <div class="PageConfigurator__page-header">
       <div class="PageConfigurator__title-row">
         <UFormGroup label="כותרת העמוד">
-          <UInput
-            :model-value="page.title"
-            dir="rtl"
-            size="lg"
-            @update:model-value="emit('updatePageTitle', page.key, $event as string)"
-          />
+          <div class="PageConfigurator__title-and-toggle">
+            <UInput
+              :model-value="page.title"
+              dir="rtl"
+              size="lg"
+              class="PageConfigurator__title-input"
+              @update:model-value="emit('updatePageTitle', page.key, $event as string)"
+            />
+            <div class="PageConfigurator__show-title">
+              <span class="PageConfigurator__show-title-label">הצג כותרת בראש העמוד</span>
+              <UToggle
+                :model-value="page.showTitle !== false"
+                @update:model-value="emit('updatePageShowTitle', page.key, $event)"
+              />
+            </div>
+          </div>
         </UFormGroup>
-        <div class="PageConfigurator__show-title">
-          <span class="PageConfigurator__show-title-label">הצג כותרת בראש העמוד</span>
-          <UToggle
-            :model-value="page.showTitle !== false"
-            @update:model-value="emit('updatePageShowTitle', page.key, $event)"
-          />
-        </div>
       </div>
     </div>
 
@@ -71,10 +74,19 @@ function isCompanyFieldOnPage1(field: FieldConfig) {
 }
 
 .PageConfigurator__title-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.PageConfigurator__title-and-toggle {
+  display: flex;
   align-items: center;
+  gap: 0.75rem;
+}
+
+.PageConfigurator__title-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .PageConfigurator__show-title {
