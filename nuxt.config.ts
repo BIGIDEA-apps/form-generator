@@ -63,6 +63,7 @@ export default defineNuxtConfig({
       googlePickerAppId: process.env.GOOGLE_PICKER_APP_ID || '',
     },
     mongodbUri: process.env.MONGODB_URI || '',
+    mongodbDatabase: process.env.MONGODB_DATABASE || '',
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || '',
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || '',
@@ -79,6 +80,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    '/img/logos/bigidea-logo.png': { redirect: { to: '/img/logos/bigidea-logo.svg', statusCode: 301 } },
     '/admin/forms/**': { ssr: false },
   },
 
